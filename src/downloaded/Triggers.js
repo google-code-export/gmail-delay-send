@@ -1,9 +1,4 @@
-function onInstall()
-{
-  onOpen();
-}
-
-function onOpen()
+function onOpenContext()
 {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var menuEntries = [ {name: "Clear", functionName: "clear"},
@@ -20,7 +15,7 @@ function onOpen()
   Browser.msgBox("Hello World");
 }
 
-function onEdit(event)
+function onEditContext(event)
 { 
   var range = event.source.getActiveRange(); 
   var value = range.getValue();  
