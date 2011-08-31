@@ -1,7 +1,12 @@
-var DATE_JS_URL = "http://gmail-delay-send.googlecode.com/files/date-en-US.js";
-var DATE_JS_CUSTOM = "http://gmail-delay-send.googlecode.com/files/date_js_custom.js";
-var DELAY_SEND_URL = "http://gmail-delay-send.googlecode.com/files/GmailDelaySend_2011_08_15.js";
-var URLS = [DATE_JS_URL,DATE_JS_CUSTOM,DELAY_SEND_URL];
+var URLS = [];
+URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/Globals.js");
+URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/Utils.js");
+URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/Triggers.js");
+URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/date-en-US.js");
+URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/CustomDate.js");
+URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/FormatSpreadsheet.js");
+URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/GmailDelaySend.js");
+
 var executeInContext = null;
 
 function runGmailDelaySend()
