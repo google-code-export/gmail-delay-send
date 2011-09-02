@@ -7,7 +7,7 @@ function onOpenContext()
   
   //if(firstTime())
   //{
-    //Browser.msgBox("Welcome to Gmail-Delay-Send!");
+    Browser.msgBox("Welcome to Gmail-Delay-Send!");
     restoreDefaults();
   //}
 }
