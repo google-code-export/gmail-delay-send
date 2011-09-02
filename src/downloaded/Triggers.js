@@ -1,19 +1,15 @@
 function onOpenContext()
 {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  /*
   var menuEntries = [ {name: "Clear", functionName: "clear"},
                       {name: "Restore Defaults", functionName: "restoreDefaults"}];
   ss.addMenu("Gmail Delay Send", menuEntries);
-  */
   
   if(firstTime())
   {
-    Browser.msgBox("Welcome to Gmail-Delay-Send!");
+    //Browser.msgBox("Welcome to Gmail-Delay-Send!");
     restoreDefaults();
   }
-  
-  Browser.msgBox("Hello World");
 }
 
 function onEditContext(event)
