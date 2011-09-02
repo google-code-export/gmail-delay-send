@@ -5,11 +5,8 @@ function onOpenContext()
                       {name: "Restore Defaults", functionName: "restoreDefaults"}];
   ss.addMenu("Gmail Delay Send", menuEntries);
   
-  //if(firstTime())
-  //{
-    Browser.msgBox("Welcome to Gmail-Delay-Send!");
+  if(firstTime())
     restoreDefaults();
-  //}
 }
 
 function onEditContext(event)
