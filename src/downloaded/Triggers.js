@@ -7,11 +7,11 @@ function onOpenContext()
   ss.addMenu("Gmail Delay Send", menuEntries);
   */
   
-  if(firstTime())
-  {
+  //if(firstTime())
+  //{
     //Browser.msgBox("Welcome to Gmail-Delay-Send!");
     restoreDefaults();
-  }
+  //}
 }
 
 function onEditContext(event)
