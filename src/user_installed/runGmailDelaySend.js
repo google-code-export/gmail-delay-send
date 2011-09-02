@@ -1,42 +1,24 @@
 var URLS = [];
+
+// TODO create one (compressed) script to download
 URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/Globals.js");
 URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/Utils.js");
-URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/Triggers.js");
 URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/date-en-US.js");
 URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/CustomDate.js");
 URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/FormatSpreadsheet.js");
 URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/GmailDelaySend.js");
+URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/Triggers.js");
 
-var executeInContext = null;
-
-function runGmailDelaySend()
-{
-  getContext();
-  executeInContext( function () { main(); } );
-}
-
-function onEdit()
-{
-  getContext();
-  executeInContext( function () { onEditContext(); } );
-}
-
-function onInstall()
-{
-  onOpen();
-}
-
-function onOpen()
-{
-  getContext();
-  executeInContext( function () { onOpenContext(); } );
-}
+var code_string = null;
 
 function getContext()
 {
-  if(executeInContext)
-    return;
-
+ 
+  if(!code_string)
+    code_string = "";
+  else
+    return code_string;
+  
   // Create functions inside so user only see's one function to run
   var urlGetCode = (function(urlString)
                     {
@@ -68,27 +50,56 @@ function getContext()
       return;
     }
     
-    eval(code);
+    code_string += code;
   }
 
-  Logger.log("Code has been successfully downloaded and eval()'ed");
-
-  executeInContext = (function(functionToCall)
-                      {
-                        functionToCall();
-                      });
-
-  Logger.log("Calling user supplied function\n");
- 
-
-  Logger.log("Done calling user supplied function\n");
+  Logger.log("Code has been successfully downloaded");
   
   if(false)
   {
    // B/C our code is dynamically run we need to let the compiler think we need
    // these permissions before we run
+   SpreadsheetApp.getActiveSpreadsheet();
    GmailApp.getUserLabelByName("null");
    MailApp.getRemainingDailyQuota();
+   null.addMenu("",[]);
    null.moveToTrash();
   }
+  
+  return code_string;
+}
+
+function runGmailDelaySend()
+{
+  eval(getContext());
+  main();
+}
+
+function onEdit()
+{
+  eval(getContext());
+  onEditContext();
+}
+
+function onInstall()
+{
+  onOpen();
+}
+
+function onOpen()
+{
+  eval(getContext());
+  onOpenContext();
+}
+
+function menuItemClear()
+{
+  eval(getContext());
+  clear();
+}
+
+function menuItemRestoreDefaults()
+{
+  eval(getContext());
+  restoreDefaults();
 }
