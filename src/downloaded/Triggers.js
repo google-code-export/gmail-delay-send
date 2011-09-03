@@ -2,6 +2,7 @@ function onOpenContext()
 {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var menuEntries = [ {name: "Clear", functionName: "menuItemClear"},
+                      {name: "Run Now", functionName: "menuItemRunGmailDelaySendNow" },
                       {name: "Restore Defaults", functionName: "menuItemRestoreDefaults"}];
   ss.addMenu("Gmail Delay Send", menuEntries);
   
