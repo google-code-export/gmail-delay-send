@@ -1,18 +1,3 @@
-function firstTime()
-{
-  var sheet = getSheet();
-  if(sheet.getRange(INSTALL_FLAG).getValue().length > 0)
-    return false;
-  else
-    return true;
-}
-
-function clear()
-{
-  var sheet = getSheet();
-  sheet.clear();
-}
-
 function restoreDefaults()
 {
   // Clear any existing formatting first
