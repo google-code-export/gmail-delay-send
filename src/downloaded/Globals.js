@@ -54,18 +54,15 @@ var DEBUG_DEFAULT = OFF;
 
 var LABEL_LABEL = "B8";
 var LABEL_OPTION = "C8";
-var LABEL_DEFAULT = "DELAY-SEND";
+var LABEL_DEFAULT = DEFAULT_DELAY_SEND_LABEL;
 
 var PARSING_LABEL = "B9";
 var PARSING_OPTION = "C9";
 var PARSING_DEFAULT = "--";
 
-// Hidden cell
-var HIDDEN_ROW = "20";
-var INSTALL_FLAG = "A"+HIDDEN_ROW;
 
 // Colors
 var TEXT_COLOR = "blue";
 
 // Regex
-var ON_OFF_REGEX = new RegExp(ON+"|"+OFF,"i");
+var ON_OFF_REGEX = new RegExp("^"+ON+"$|^"+OFF+"$","i");
