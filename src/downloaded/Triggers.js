@@ -1,29 +1,35 @@
-function onOpenContext()
-{
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var menuEntries = [ {name: "Clear", functionName: "menuItemClear"},
-                      {name: "Run Now", functionName: "menuItemRunGmailDelaySendNow" },
-                      {name: "Restore Defaults", functionName: "menuItemRestoreDefaults"}];
-  ss.addMenu("Gmail Delay Send", menuEntries);
-  
-  if(firstTime())
-  {
-    Browser.msgBox("Welcome to Gmail Delay Send!");
-    restoreDefaults();
-  }
-}
-
 function onEditContext(event)
 { 
+  if(!event)
+  {
+    debug("Something is wrong, edit event is null");
+    return;
+  }
+  
   var range = event.source.getActiveRange(); 
   var value = range.getValue();  
-  var location = range.getA1Notification();
+  var location = range.getA1Notation();
   
-  if( (location == RECEIPT_OPTION || location == ERROR_OPTION || location == DEBUG_OPTION) && ON_OFF_REGEX.match(value) == null)
-  {
-    Browser.msgBox("Sorry, you can only change these boxes to '"+ON+"' or '"+OFF+"'");
-    range.setValue(ON);
-  }
+  debug("New value of cell:"+value+" Location of changed cell:"+location+" Match regex:"+ON_OFF_REGEX.test(value));
+  
+  var valid_value = ON_OFF_REGEX.test(value);
+  
+  // We don't need to check where the user changed, because it's valid anyway.
+  if(valid_value)
+    return;
+   
+  var default_value = OFF;
+      
+  // Did they change a settings box?
+  if(location == RECEIPT_OPTION)
+    default_value = RECEIPT_DEFAULT;
+  else if(location == ERROR_OPTION)
+    default_value = ERROR_DEFAULT;
+  else if(location == DEBUG_OPTION)
+    default_value = DEBUG_DEFAULT;
+  
+  Browser.msgBox("Sorry, You can only change these boxes to be: '"+ON+"' or '"+OFF);
+  range.setValue(default_value);
 }
 
 /* Function called on event timer */
