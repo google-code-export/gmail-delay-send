@@ -1,3 +1,9 @@
+function clear()
+{
+  var sheet = getSheet();
+  sheet.clear();
+}
+
 function restoreDefaults()
 {
   // Clear any existing formatting first
