@@ -1,4 +1,23 @@
-var RUN_LOCAL_VERSION = true;
+var RUN_LOCAL_VERSION = false;
+var HIDDEN_ROW = "20";
+var INSTALL_FLAG = "A"+HIDDEN_ROW;
+var SCRIPT_NAME = "GMail Delay Send";
+
+// Valid options
+var ON = "on";
+var OFF = "off";
+
+// Regex
+var ON_OFF_REGEX = new RegExp("^"+ON+"$|^"+OFF+"$","i");
+
+var RECEIPT_OPTION = "C4";
+var RECEIPT_DEFAULT = ON;
+var ERROR_OPTION = "C5";
+var ERROR_DEFAULT = ON;
+var DEBUG_OPTION = "C6";
+var DEBUG_DEFAULT = OFF;
+
+var debug_logs = [];
 
 var URLS = [];
 
@@ -74,8 +93,6 @@ function getContext()
 function onEdit(event)
 {
   Logger.log("Firing onEdit Trigger");
-  if(!RUN_LOCAL_VERSION)
-    eval(getContext());
   onEditContext(event);
 }
 
@@ -180,9 +197,6 @@ function menuItemHelp()
   Browser.msgBox("Please visit the "+SCRIPT_NAME+" homepage at: http://code.google.com/p/gmail-delay-send for help");
 }
 
-// Hidden cell
-var HIDDEN_ROW = "20";
-var INSTALL_FLAG = "A"+HIDDEN_ROW;
 
 function firstTime()
 {
@@ -194,4 +208,44 @@ function firstTime()
   Logger.log("First time?:"+toReturn);
   
   return toReturn;
+}
+
+function onEditContext(event)
+{ 
+  if(!event)
+  {
+    debug("Something is wrong, edit event is null");
+    return;
+  }
+  
+  var range = event.source.getActiveRange(); 
+  var value = range.getValue();  
+  var location = range.getA1Notation();
+  
+  debug("New value of cell:"+value+" Location of changed cell:"+location+" Match regex:"+ON_OFF_REGEX.test(value));
+  
+  var valid_value = ON_OFF_REGEX.test(value);
+  
+  // We don't need to check where the user changed, because it's valid anyway.
+  if(valid_value)
+    return;
+   
+  var default_value = OFF;
+      
+  // Did they change a settings box?
+  if(location == RECEIPT_OPTION)
+    default_value = RECEIPT_DEFAULT;
+  else if(location == ERROR_OPTION)
+    default_value = ERROR_DEFAULT;
+  else if(location == DEBUG_OPTION)
+    default_value = DEBUG_DEFAULT;
+  
+  Browser.msgBox("Sorry, You can only change these boxes to be: '"+ON+"' or '"+OFF);
+  range.setValue(default_value);
+}
+
+function debug(msg)
+{
+  debug_logs.push(msg);
+  Logger.log(msg);
 }
