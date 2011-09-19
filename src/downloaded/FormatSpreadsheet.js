@@ -26,7 +26,7 @@ function restoreDefaults()
   var underTitleLink = sheet.getRange(MORE_INFO_LINK);
   underTitleLink = underTitleLink.mergeAcross();
   underTitleLink.setFontColor("blue");
-  underTitleLink.setValue('=HYPERLINK("http://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendInstalled","Learn about Gmail-Delay-Send")');
+  underTitleLink.setValue('=HYPERLINK("http://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendFAQ","Learn about Gmail-Delay-Send")');
   
   // Notification section
   var notifyLink = sheet.getRange(NOTIFICATION_LINK);
