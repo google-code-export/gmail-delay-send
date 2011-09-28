@@ -29,6 +29,7 @@ var debug_logs = [];
 var URLS = [];
 
 // TODO create one (compressed) script to download
+/*
 URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/Globals.js");
 URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/Utils.js");
 URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/date-en-US.js");
@@ -36,6 +37,8 @@ URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/CustomDate.
 URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/FormatSpreadsheet.js");
 URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/GmailDelaySend.js");
 URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/Triggers.js");
+*/
+URLS.push("http://gmail-delay-send.googlecode.com/files/BETA_0.5.combined");
 
 var code_string = null;
 
