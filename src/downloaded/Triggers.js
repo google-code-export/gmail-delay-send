@@ -1,18 +1,13 @@
-
 // Function called on event timer
 function main()
-{
+{ 
   loadSettingsFromSpreadsheet();
   
   debug("Checking if user has the delay send label");
   
-  if(DELAY_SEND_LABEL != null && !userHasDelaySendLabel())
-  {
-    debug("Could not find: "+DELAY_SEND_LABEL + "label, creating now..");
-    createDelaySendLabel();
-    sendLogs();
+  // If we just created the label then we know there can't be any emails to send yet.
+  if(createLabelIfNeeded())
     return;
-  }
   
   // Found the label, lets see if anything is in it
   var threads = getThreadsInLabel();
@@ -24,6 +19,8 @@ function main()
   }
   else
     debug("No threads found to process.. exiting");
+  
+  check_for_notification_emails();
   
   sendLogs();
 }

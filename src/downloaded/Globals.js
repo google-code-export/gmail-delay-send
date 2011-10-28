@@ -1,4 +1,3 @@
-
 // Global settings
 var SEND_RECEIPTS;        // You will get an email confirming that your email was sent 
 var SEND_PARSE_ERRORS;    // You will get an email with any parsing errors (a good idea to keep on) 
@@ -6,6 +5,8 @@ var SEND_DEBUG_LOG;       // For debugging problems
 var DELAY_SEND_LABEL;     // The label that we'll search under, set to null to search entire draft folder 
 var DELIMITER;            // The text string seperating the subject from the date to send 
 var DELAY_SEND_REGEX;
+
+var DOWNLOAD_SCRIPT_VERSION = 6;
 
 // Default Email Configuration Stuff 
 var DEFAULT_SEND_RECEIPTS = true;
@@ -32,9 +33,8 @@ var parse_errors = [];
 var DELAY_SEND_REGEX = null;
 
 
-
 // Ranges
-var TITLE_RANGE = "A1:C1";
+
 var MORE_INFO_LINK = "A2:B2";
 var NOTIFICATION_LINK = "A4";
 var ADVANCED_LINK = "A8";
@@ -60,3 +60,6 @@ var PARSING_DEFAULT = "--";
 
 // Colors
 var TEXT_COLOR = "blue";
+
+// Text (in pixels)
+var EMAIL_FOOTER_TEXT_SIZE=10;

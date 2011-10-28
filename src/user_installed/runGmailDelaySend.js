@@ -5,7 +5,22 @@ var RUN_LOCAL_VERSION = false;
 /// GLOBALS /////////////////
 /////////////////////////////
 
+var USER_SCRIPT_VERSION = 6;
+
+var EXECUTE_COMMAND_LOGGING = false;
+
+// Valid options
+var ON = "on";
+var OFF = "off";
+
+// Retry logic
+var NUM_RETRIES = 5;
+
+// In milliseconds
+var SLEEP_TIME = 1500;
+
 // Spreadsheet Format stuff
+var TITLE_RANGE = "A1:C1";
 var HIDDEN_ROW = "20";
 var INSTALL_FLAG = "A"+HIDDEN_ROW;
 var SCRIPT_NAME = "GMail Delay Send";
@@ -16,10 +31,6 @@ var ERROR_DEFAULT = ON;
 var DEBUG_OPTION = "C6";
 var DEBUG_DEFAULT = OFF;
 
-// Valid options
-var ON = "on";
-var OFF = "off";
-
 // Regex for options
 var ON_OFF_REGEX = new RegExp("^"+ON+"$|^"+OFF+"$","i");
 
@@ -28,14 +39,7 @@ var debug_logs = [];
 
 var URLS = [];
 
-URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/Globals.js");
-URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/Utils.js");
-URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/date-en-US.js");
-URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/CustomDate.js");
-URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/FormatSpreadsheet.js");
-URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/GmailDelaySend.js");
-URLS.push("http://gmail-delay-send.googlecode.com/git/src/downloaded/Triggers.js");
-//URLS.push("http://gmail-delay-send.googlecode.com/files/BETA_0.5.combined");
+URLS.push("http://gmail-delay-send.googlecode.com/files/BETA_0.6.combined");
 
 var code_string = null;
 
@@ -48,13 +52,22 @@ function _runGmailDelaySend()
 {
   if(!RUN_LOCAL_VERSION)
    eval(getContext());
-  main();
+  try
+  {
+    executeCommand((function(){ main();}));
+  }
+  catch(err)
+  {
+    Logger.log("Could not stop error in funcion. Error message: "+err);
+  }
 }
 
 function onInstall()
 {
   Logger.log("Firing onInstall Trigger");
-  onOpen();
+  var range = getSheet().getRange(TITLE_RANGE);
+  range= range.mergeAcross();
+  range.setValue("Please close/open spreadsheet to complete installation");
 }
 
 function onOpen()
@@ -119,6 +132,8 @@ function menuItemRestoreDefaults()
     eval(getContext());
   restoreDefaults();
   createNormalMenu();
+  loadSettingsFromSpreadsheet();
+  createLabelIfNeeded();
 }
 
 function menuItemParseDate()
@@ -217,6 +232,76 @@ function debug(msg)
   Logger.log(msg);
 }
 
+function executeCommand(fp)
+{  
+  var msg;
+  var ret_val;
+  var last_error;
+  
+  if(EXECUTE_COMMAND_LOGGING)
+  {
+    msg = ">>>>>>>>\n";
+    debug_logs.push(msg);
+    Logger.log(msg);
+  }
+  
+  for(var retries = NUM_RETRIES; retries > 0; retries -= 1)
+  {
+    try
+    {
+      ret_val = fp();
+      if(EXECUTE_COMMAND_LOGGING)
+      {
+        msg = "Successfully executed command:"+fp;
+        debug_logs.push(msg);
+        Logger.log(msg);
+      }
+      break;
+    }
+    catch(err)
+    {
+      last_error = err;
+      msg = "Exception:"+err+" thrown executing function:"+fp;
+      debug_logs.push(msg);
+      Logger.log(msg);
+      Utilities.sleep(SLEEP_TIME);
+    }
+  }
+  
+  if(EXECUTE_COMMAND_LOGGING)
+  {
+    msg = "<<<<<<<<<\n";
+    debug_logs.push(msg);
+    Logger.log(msg);
+  }
+  
+  if(retries == 0)
+  {
+    msg = "Attempted to execute command:"+fp+" "+NUM_RETRIES+" times without success. Error message: "+last_error+". Aborting  :-(";
+    Logger.log(msg);
+    throw(msg);
+  }
+  
+  return ret_val;
+}
+
+function urlGetCode(urlString)
+{
+  Logger.log("Getting URL:"+urlString);
+  var resp = executeCommand( (function(){ return UrlFetchApp.fetch(urlString);}));
+  Logger.log("Response: "+resp.getResponseCode());
+  if(resp.getResponseCode() == 200)
+  {
+    Logger.log("Success with URL!");
+    return resp.getContentText();
+  }
+  else
+  {
+    Logger.log("Error trying to get URL. Response code:"+resp.getResponseCode());
+    return null;
+  }
+}
+
 // Downloads all the scripts and returns them as a string
 function getContext()
 {
@@ -224,25 +309,6 @@ function getContext()
     code_string = "";
   else
     return code_string;
-  
-  // Create functions inside so user only see's one function to run
-  var urlGetCode = (function(urlString)
-                    {
-                      Logger.log("Getting URL:"+urlString);
-                      var resp = UrlFetchApp.fetch(urlString);
-                      Logger.log("Response: "+resp.getResponseCode());
-                      if(resp.getResponseCode() == 200)
-                      {
-                        Logger.log("Success with URL!");
-                        return resp.getContentText();
-                      }
-                      else
-                      {
-                        Logger.log("Error trying to get URL. Response code:"+resp.getResponseCode());
-                        return null;
-                      }
-                    });
-
   
   // ************* CODE START ****************//
   Logger.log("Scripts to download: "+URLS);
@@ -269,6 +335,7 @@ function getContext()
    SpreadsheetApp.getActiveSpreadsheet();
    GmailApp.getUserLabelByName("null");
    MailApp.getRemainingDailyQuota();
+   Utilities.sleep(1);
    null.addMenu("",[]);
    null.moveToTrash();
   }
