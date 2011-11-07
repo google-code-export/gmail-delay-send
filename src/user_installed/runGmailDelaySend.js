@@ -335,6 +335,7 @@ function getContext()
    SpreadsheetApp.getActiveSpreadsheet();
    GmailApp.getUserLabelByName("null");
    MailApp.getRemainingDailyQuota();
+   MailApp.sendEmail({});
    Utilities.sleep(1);
    null.addMenu("",[]);
    null.moveToTrash();
