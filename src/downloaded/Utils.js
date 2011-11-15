@@ -1,4 +1,3 @@
-
 function getSheet()
 {
   return SpreadsheetApp.getActiveSheet();

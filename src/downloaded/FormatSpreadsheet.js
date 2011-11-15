@@ -49,6 +49,14 @@ function restoreDefaults()
   addUserOption(sheet, LABEL_LABEL,LABEL_OPTION,"Label name",LABEL_DEFAULT);
   addUserOption(sheet, PARSING_LABEL,PARSING_OPTION,"Parsing Deilimiter",PARSING_DEFAULT);
   
+  // Date Parsing section
+  var dateLink = sheet.getRange(DATE_LINK);
+  dateLink.setFontColor(TEXT_COLOR);
+  dateLink.setValue('=HYPERLINK("http://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendSpecifyingDates","Help with dates:")');
+  dateLink.setHorizontalAlignment("right");
+  
+  addUserOption(sheet, DATE_LABEL,DATE_OPTION,"Practice creating dates:",DATE_DEFAULT);
+  
   sheet.getRange(INSTALL_FLAG).setValue(ON);
   sheet.hideRow(sheet.getRange(INSTALL_FLAG));
 }

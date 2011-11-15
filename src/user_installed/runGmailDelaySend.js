@@ -52,14 +52,8 @@ function _runGmailDelaySend()
 {
   if(!RUN_LOCAL_VERSION)
    eval(getContext());
-  try
-  {
-    executeCommand((function(){ main();}));
-  }
-  catch(err)
-  {
-    Logger.log("Could not stop error in funcion. Error message: "+err);
-  }
+  executeCommand((function(){ main();}));
+
 }
 
 function onInstall()
@@ -82,9 +76,24 @@ function onEdit(event)
   onEditContext(event);
 }
 
+function parseUserDate(date)
+{
+  debug("Date passed from user:"+date);
+  
+  if(!RUN_LOCAL_VERSION)
+   eval(getContext());
+  
+  var d = Date.parse(date);
+  
+  if(d == null)
+    return "Sorry, I could not parse the date:"+date;
+  else
+    return "'"+date+"' would be sent at '"+d.toString()+"'";
+}
+
 function onEditContext(event)
 { 
-  if(!event)
+  if(event == null)
   {
     debug("Something is wrong, edit event is null");
     return;
@@ -103,16 +112,25 @@ function onEditContext(event)
     return;
    
   var default_value = OFF;
-      
-  // Did they change a settings box?
-  if(location == RECEIPT_OPTION)
+   
+  var user_message = "Sorry, You can only change these boxes to be: '"+ON+"' or '"+OFF;
+  
+  // Did they change a box we care about?
+  if(location == DATE_OPTION)
+  {
+    user_message = parseUserDate(value);
+    default_value = DATE_DEFAULT;
+  }
+  else if(location == RECEIPT_OPTION)
     default_value = RECEIPT_DEFAULT;
   else if(location == ERROR_OPTION)
     default_value = ERROR_DEFAULT;
   else if(location == DEBUG_OPTION)
     default_value = DEBUG_DEFAULT;
+  else
+    return;
   
-  Browser.msgBox("Sorry, You can only change these boxes to be: '"+ON+"' or '"+OFF);
+  Browser.msgBox(user_message);
   range.setValue(default_value);
 }
 
@@ -134,25 +152,6 @@ function menuItemRestoreDefaults()
   createNormalMenu();
   loadSettingsFromSpreadsheet();
   createLabelIfNeeded();
-}
-
-function menuItemParseDate()
-{
-  var resp = Browser.inputBox("Enter date you would like to parse (eg. 'tomorrow' or 'Wednesday 10am')", Browser.Buttons.OK_CANCEL);
-  
-  //if(!RUN_LOCAL_VERSION)
-    eval(getContext());
-  
-  Logger.log("User Entered: "+resp);
-
-  var d = Date.parse(resp);
-  
-  Logger.log("Parsed value:"+d);
-  
-  if(d)
-    Browser.msgBox("Date string '"+resp+"' parsed successfully to date:\n\n"+new Date(d));
-  else
-    Browser.msgBox("Sorry, I couldn't understand '"+resp+"'");
 }
 
 function menuItemRunGmailDelaySendNow()
@@ -195,7 +194,6 @@ function createNormalMenu()
   var ss = getSpreadsheet();
   var menuEntries = [ {name: "Clear", functionName: "menuItemClear"},
                       {name: "Run Now", functionName: "menuItemRunGmailDelaySendNow" },
-                      {name: "Test a Date", functionName: "menuItemParseDate" },
                       {name: "Restore Defaults", functionName: "menuItemRestoreDefaults"},
                       {name: "Help", functionName: "menuItemHelp"}];
   ss.addMenu(SCRIPT_NAME, menuEntries);
@@ -333,10 +331,18 @@ function getContext()
    // B/C our code is dynamically run we need to let the compiler think we need
    // these permissions before we run
    SpreadsheetApp.getActiveSpreadsheet();
+   SpreadsheetApp.getActiveSheet();
+    
    GmailApp.getUserLabelByName("null");
+   GmailApp.getUserLabels();
+   GmailApp.createLabel(null);
+   GmailApp.search("");
+   GmailApp.sendEmail({});
+    
    MailApp.getRemainingDailyQuota();
    MailApp.sendEmail({});
    Utilities.sleep(1);
+    
    null.addMenu("",[]);
    null.moveToTrash();
   }

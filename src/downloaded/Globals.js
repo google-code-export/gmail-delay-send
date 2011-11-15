@@ -38,6 +38,7 @@ var DELAY_SEND_REGEX = null;
 var MORE_INFO_LINK = "A2:B2";
 var NOTIFICATION_LINK = "A4";
 var ADVANCED_LINK = "A8";
+var DATE_LINK = "A10";
 
 var RECEIPT_LABEL = "B4";
 
@@ -56,6 +57,10 @@ var LABEL_DEFAULT = DEFAULT_DELAY_SEND_LABEL;
 var PARSING_LABEL = "B9";
 var PARSING_OPTION = "C9";
 var PARSING_DEFAULT = "--";
+
+var DATE_LABEL="B10";
+var DATE_OPTION = "C10";
+var DATE_DEFAULT="Enter date string here (eg. \"tomorrow\") then <enter>";
 
 
 // Colors
