@@ -1,5 +1,5 @@
 #!/bin/sh
-VERSION=BETA_0.7
+VERSION=BETA_0.7.2
 
 git tag -f ${VERSION}
 
