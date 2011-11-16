@@ -5,7 +5,7 @@ var RUN_LOCAL_VERSION = false;
 /// GLOBALS /////////////////
 /////////////////////////////
 
-var USER_SCRIPT_VERSION = 7.2;
+var USER_SCRIPT_VERSION = 7.3;
 
 var EXECUTE_COMMAND_LOGGING = false;
 

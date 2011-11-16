@@ -6,7 +6,7 @@ var DELAY_SEND_LABEL;     // The label that we'll search under, set to null to s
 var DELIMITER;            // The text string seperating the subject from the date to send 
 var DELAY_SEND_REGEX;
 
-var DOWNLOAD_SCRIPT_VERSION = 7.1;
+var DOWNLOAD_SCRIPT_VERSION = 7.3;
 
 // Default Email Configuration Stuff 
 var DEFAULT_SEND_RECEIPTS = true;
