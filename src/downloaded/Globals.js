@@ -59,8 +59,7 @@ var PARSING_OPTION = "C9";
 var PARSING_DEFAULT = "--";
 
 var DATE_LABEL="B11";
-var DATE_OPTION = "C11";
-var DATE_DEFAULT="Enter date string here (eg. \"tomorrow\") then <enter>";
+
 
 
 // Colors

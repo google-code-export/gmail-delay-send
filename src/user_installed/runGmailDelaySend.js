@@ -24,12 +24,18 @@ var TITLE_RANGE = "A1:C1";
 var HIDDEN_ROW = "20";
 var INSTALL_FLAG = "A"+HIDDEN_ROW;
 var SCRIPT_NAME = "GMail Delay Send";
+
 var RECEIPT_OPTION = "C4";
 var RECEIPT_DEFAULT = ON;
+
 var ERROR_OPTION = "C5";
 var ERROR_DEFAULT = ON;
+
 var DEBUG_OPTION = "C6";
 var DEBUG_DEFAULT = OFF;
+
+var DATE_OPTION = "C11";
+var DATE_DEFAULT="Enter date string here (eg. \"tomorrow\") then <enter>";
 
 // Regex for options
 var ON_OFF_REGEX = new RegExp("^"+ON+"$|^"+OFF+"$","i");
