@@ -6,7 +6,7 @@ var DELAY_SEND_LABEL;     // The label that we'll search under, set to null to s
 var DELIMITER;            // The text string seperating the subject from the date to send 
 var DELAY_SEND_REGEX;
 
-var DOWNLOAD_SCRIPT_VERSION = 7.3;
+var DOWNLOAD_SCRIPT_VERSION = 7.5;
 
 // Default Email Configuration Stuff 
 var DEFAULT_SEND_RECEIPTS = true;
@@ -17,6 +17,8 @@ var DEFAULT_SEND_DEBUG_LOG = true;
 var DEFAULT_DELAY_SEND_LABEL = "DELAY_SEND"; // The label that we'll search under, set to null to search entire draft folder 
 var DEFAULT_DELIMITER = "--";                // The text string seperating the subject from the date to send 
 
+// Malformed messages will be placed in this label
+var DELAY_SEND_ERROR_LABEL = "DELAY_SEND_ERRORS";
 
 // Spreadsheet locations 
 var SEND_RECEIPTS_CELL = "C4";
