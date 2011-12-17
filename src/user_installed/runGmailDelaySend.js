@@ -5,7 +5,7 @@ var RUN_LOCAL_VERSION = false;
 /// GLOBALS /////////////////
 /////////////////////////////
 
-var USER_SCRIPT_VERSION = 7.3;
+var USER_SCRIPT_VERSION = 7.5;
 
 var EXECUTE_COMMAND_LOGGING = false;
 
@@ -45,7 +45,7 @@ var debug_logs = [];
 
 var URLS = [];
 
-URLS.push("http://gmail-delay-send.googlecode.com/files/BETA_0.7.2.combined");
+URLS.push("http://gmail-delay-send.googlecode.com/files/0.7.5.combined");
 
 var code_string = null;
 
@@ -90,14 +90,20 @@ function onEdit(event)
 
 function parseUserDate(date)
 {
+  var ret;
+  
   debug("Date passed from user:"+date);
   
   var d = Date.parse(date);
   
   if(d == null)
-    return "Sorry, I could not parse the date:"+date;
+    ret = "Sorry, I could not parse the date:"+date;
   else
-    return "'"+date+"' would be sent at '"+d.toString()+"'";
+    ret =  "'"+date+"' would be sent at '"+d.toString()+"'";
+  
+  debug("Parsed date:"+ret);
+  
+  return ret;
 }
 
 function onEditContext(event)
@@ -109,7 +115,11 @@ function onEditContext(event)
   }
   
   var range = event.source.getActiveRange(); 
-  var value = range.getValue();  
+  
+  // To avoid issue http://code.google.com/p/google-apps-script-issues/issues/detail?id=956
+  range.setNumberFormat("@STRING@");
+  
+  var value = range.getValue();
   var location = range.getA1Notation();
   
   debug("New value of cell:"+value+" Location of changed cell:"+location+" Match regex:"+ON_OFF_REGEX.test(value));
