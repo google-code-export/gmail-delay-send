@@ -50,7 +50,7 @@ var debug_logs = [];
 
 var URLS = [];
 
-URLS.push("http://gmail-delay-send.googlecode.com/files/0.7.5.combined");
+URLS.push("http://gmail-delay-send.googlecode.com/files/0.7.6.combined");
 
 var code_string = null;
 
