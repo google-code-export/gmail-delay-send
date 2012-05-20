@@ -6,7 +6,7 @@ var DELAY_SEND_LABEL;     // The label that we'll search under, set to null to s
 var DELIMITER;            // The text string seperating the subject from the date to send 
 var DELAY_SEND_REGEX;
 
-var DOWNLOAD_SCRIPT_VERSION = 7.5;
+var DOWNLOAD_SCRIPT_VERSION = 7.6;
 
 // Default Email Configuration Stuff 
 var DEFAULT_SEND_RECEIPTS = true;
@@ -40,10 +40,11 @@ var DELAY_SEND_REGEX = null;
 var MORE_INFO_LINK = "A2:B2";
 var NOTIFICATION_LINK = "A4";
 var ADVANCED_LINK = "A8";
-var DATE_LINK = "A11";
+var TIMEZONE_LINK = "A11";
+var DATE_LINK = "A13";
 
 var RECEIPT_LABEL = "B4";
-
+var TIMEZONE_LABEL = "B11";
 
 var ERROR_LABEL = "B5";
 
@@ -60,7 +61,7 @@ var PARSING_LABEL = "B9";
 var PARSING_OPTION = "C9";
 var PARSING_DEFAULT = "--";
 
-var DATE_LABEL="B11";
+var DATE_LABEL="B13";
 
 
 
