@@ -45,9 +45,17 @@ function restoreDefaults()
   advancedLink.setValue('=HYPERLINK("http://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendAdvancedSettings","Advanced Settings:")');
   advancedLink.setHorizontalAlignment("right");
   
-  //
+  // Parsing delimeter
   addUserOption(sheet, LABEL_LABEL,LABEL_OPTION,"Label name",LABEL_DEFAULT);
   addUserOption(sheet, PARSING_LABEL,PARSING_OPTION,"Parsing Deilimiter",PARSING_DEFAULT);
+  
+  // Current timezone setting
+  var currentTimeZone = sheet.getRange(TIMEZONE_LINK);
+  currentTimeZone.setFontColor(TEXT_COLOR);
+  currentTimeZone.setValue('=HYPERLINK("http://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendTimeZone","Setting Time Zone:")');
+  currentTimeZone.setHorizontalAlignment("right");
+  
+  addUserOption(sheet, TIMEZONE_LABEL, TIMEZONE_OPTION, "Current time zone: (open/close doc to update)", getCurrentTimeZone() );
   
   // Date Parsing section
   var dateLink = sheet.getRange(DATE_LINK);
@@ -55,7 +63,7 @@ function restoreDefaults()
   dateLink.setValue('=HYPERLINK("http://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendSpecifyingDates","Help with dates:")');
   dateLink.setHorizontalAlignment("right");
   
-  addUserOption(sheet, DATE_LABEL,DATE_OPTION,"Practice creating dates:",DATE_DEFAULT);
+  addUserOption(sheet, DATE_LABEL, DATE_OPTION,"Practice creating dates:",DATE_DEFAULT);
   
   sheet.getRange(INSTALL_FLAG).setValue(ON);
   sheet.hideRow(sheet.getRange(INSTALL_FLAG));
