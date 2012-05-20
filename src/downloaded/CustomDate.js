@@ -19,4 +19,4 @@ Date.prototype.setTimeToNow = function ()
     this.setSeconds(n.getSeconds());
     this.setMilliseconds(n.getMilliseconds());
     return this;
-};
+}
