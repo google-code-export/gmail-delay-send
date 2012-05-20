@@ -5,7 +5,7 @@ var RUN_LOCAL_VERSION = false;
 /// GLOBALS /////////////////
 /////////////////////////////
 
-var USER_SCRIPT_VERSION = 7.5;
+var USER_SCRIPT_VERSION = 7.6;
 
 var EXECUTE_COMMAND_LOGGING = false;
 
@@ -34,8 +34,13 @@ var ERROR_DEFAULT = ON;
 var DEBUG_OPTION = "C6";
 var DEBUG_DEFAULT = OFF;
 
-var DATE_OPTION = "C11";
+var DATE_OPTION = "C13";
 var DATE_DEFAULT="Enter date string here (eg. \"tomorrow\") then <enter>";
+
+var TIMEZONE_OPTION = "C11";
+
+var TRIGGER_FUNCTION="_runGmailDelaySend";
+var TRIGGER_MINUTE_TIMER=5;
 
 // Regex for options
 var ON_OFF_REGEX = new RegExp("^"+ON+"$|^"+OFF+"$","i");
@@ -80,6 +85,7 @@ function onOpen()
 {
   Logger.log("Firing onOpen Trigger");
   createMenu();
+  updateTimeZone();
 }
 
 function onEdit(event)
@@ -121,7 +127,7 @@ function onEditContext(event)
   
   var value = range.getValue();
   var location = range.getA1Notation();
-  
+
   debug("New value of cell:"+value+" Location of changed cell:"+location+" Match regex:"+ON_OFF_REGEX.test(value));
   
   var valid_value = ON_OFF_REGEX.test(value);
@@ -139,6 +145,11 @@ function onEditContext(event)
   {
     user_message = parseUserDate(value);
     default_value = DATE_DEFAULT;
+  }
+  else if(location == TIMEZONE_OPTION)
+  {
+    user_message = "Please follow these instructions to set your timezone: http://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendTimeZone";
+    default_value = getCurrentTimeZone();
   }
   else if(location == RECEIPT_OPTION)
     default_value = RECEIPT_DEFAULT;
@@ -161,6 +172,7 @@ function menuItemClear()
   if(!RUN_LOCAL_VERSION)
     eval(getContext());
   clear();
+  removeTrigger(TRIGGER_FUNCTION);
 }
 
 function menuItemRestoreDefaults()
@@ -171,6 +183,7 @@ function menuItemRestoreDefaults()
   createNormalMenu();
   loadSettingsFromSpreadsheet();
   createLabelIfNeeded();
+  setupTrigger(TRIGGER_FUNCTION,TRIGGER_MINUTE_TIMER);
 }
 
 function menuItemRunGmailDelaySendNow()
@@ -223,6 +236,65 @@ function createNormalMenu()
 /////////////////////////////
 /// UTILS ///////////////////
 /////////////////////////////
+
+function updateTimeZone()
+{
+  if(!firstTime())
+  {
+    var cell = getSheet().getRange(TIMEZONE_OPTION);
+    var tz = getCurrentTimeZone();
+    if(cell.getValue != tz)
+      cell.setValue(tz);
+  }
+}
+
+function findTrigger(nameOfFunction)
+{
+  var triggers =  executeCommand( (function(){ return ScriptApp.getScriptTriggers();}));
+  for(i=0; i<triggers.length; i++)
+    if(triggers[i].getHandlerFunction() == nameOfFunction)
+      return triggers[i];
+  return null;
+}
+
+function isTriggerAlreadySet(nameOfFunction)
+{
+  return findTrigger(nameOfFunction) != null;
+}
+
+function createTimeTrigger(functionName, minutes)
+{
+  executeCommand( ( function() {
+    ScriptApp.newTrigger(functionName)
+      .timeBased()
+      .everyMinutes(minutes)
+      .create();
+  }));
+}
+
+function deleteTrigger(functionName)
+{
+  executeCommand((function(){ ScriptApp.deleteTrigger(findTrigger(functionName)) }));
+}
+
+function removeTrigger(functionName)
+{
+  if(isTriggerAlreadySet(functionName))
+    deleteTrigger(functionName);
+}
+
+function setupTrigger(functionName, minutes)
+{
+  debug("Setting up trigger for function:"+functionName+" minutes: "+minutes);
+  if(!isTriggerAlreadySet(functionName))
+  {
+    debug("Trigger has not already been set for function:"+functionName+". Setting now to every: "+minutes+" minutes");
+    createTimeTrigger(functionName,minutes);
+  }
+  else
+    debug("Trigger is already set for function:"+functionName);
+}
+
 function getSpreadsheet()
 {
   return SpreadsheetApp.getActiveSpreadsheet();
@@ -231,6 +303,11 @@ function getSpreadsheet()
 function getSheet()
 {
   return getSpreadsheet().getActiveSheet();
+}
+
+function getCurrentTimeZone()
+{
+  return executeCommand( (function(){ return Session.getTimeZone();}));
 }
 
 function firstTime()
@@ -363,6 +440,8 @@ function getContext()
    MailApp.getRemainingDailyQuota();
    MailApp.sendEmail({});
    Utilities.sleep(1);
+    
+   ScriptApp.newTrigger("blah").create();
     
    null.addMenu("",[]);
    null.moveToTrash();
