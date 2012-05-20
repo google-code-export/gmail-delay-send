@@ -120,7 +120,7 @@ function parseMessageSubject(subjectLine, messageDate)
 
     var date_string = subjectLine.slice(match.index+DELIMITER.length,subjectLine.length);
    
-    debug("Date String: "+date_string);
+    debug("Date String: "+date_string+" Relative to date message was composed:"+messageDate);
     
     Date.setRelativeTo(messageDate);
     metaData.sendDate = parseDate(date_string);
