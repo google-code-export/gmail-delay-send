@@ -1,0 +1,153 @@
+/**********************
+ Utils
+**********************/
+function getScriptTimeZone() {
+  return executeCommand( (function(){ return Session.getTimeZone();}));
+}
+
+function parseDate(str) {
+  return Date.parse(str);
+}
+
+function createLabels() {
+  labels_to_create = [getUserPrefs().getTopLabelName(),
+                      getUserPrefs().getToSendLabelName(),
+                      getUserPrefs().getErrorLabelName(),
+                      getUserPrefs().getSentLabelName()];
+  
+  for(var i=0; i<labels_to_create.length; i++) {    
+    var user_label = labels_to_create[i];    
+    if(user_label && !userHasLabel(user_label)) {
+      debug('Could not find: ' + user_label + ' label, creating now..');
+      if(!createLabel(user_label)) {
+        // Error creating the label
+        debug('Error creating label:' + user_label);
+        return false;
+      } 
+    }
+  }
+  return true;
+}
+
+/* Returns all the threads objects that are in the label and in the draft folder */
+function getThreadsInLabel() {
+  var search_string = 'in:drafts ';
+  var prefs = getUserPrefs();
+  
+  var label_name = prefs.getToSendLabelName();
+  var error_label = prefs.getErrorLabelName();
+  
+  if(prefs.getRequireLabel())
+    search_string += ' + in:' + label_name;
+  
+  // do not include any message in the error bucket
+  search_string += ' + -label:' + error_label + ' ';
+  
+  debug('Searching for emails with this string: "' + search_string + '"');
+  
+  var threads = executeCommand( function() { return GmailApp.search(search_string); } );
+  
+  return threads;
+}
+
+// Create the error label if it doens't exist already
+// Apply the error label to the message.
+function applyErrorLabel(message) {
+  return applyLabelToMessage(message, getUserPrefs().getErrorLabelName());
+}
+
+function applyLabelToMessage(message, labelName) {
+  var label = executeCommand( function() { return GmailApp.createLabel(labelName); } );
+  
+  if(label == null) {
+    debug('Was not able to create label: ' + labelName);
+    return false;
+  }
+  
+  debug('Succesfully found label: ' + labelName);
+  
+  var thread = executeCommand( function() { return message.getThread(); } );
+  
+  executeCommand( function() { thread.addLabel(label); } );
+    
+  debug('Successfully added label (' + labelName + ') to message with subject: ' + message.getSubject());
+  
+  return true;
+}
+
+
+/* Returns true/false if the user has the label created */
+function userHasLabel(label) {
+  var labels = executeCommand( function() { return GmailApp.getUserLabels(); } );
+  for(var i=0; i<labels.length; i++)
+    if(labels[i].getName() == label)
+      return true;
+  return false;
+}
+
+/* Creates label, true/false if label creation was successful */
+function createLabel(label) {
+  var label = executeCommand( function() { return GmailApp.createLabel(label); } );
+  
+  if(label) {
+    debug('New label created successfully');
+    return true;
+  }
+  else {
+    receipts.push(' Error trying to create a new label: "' + label + '". Cannot continue.  :-(');
+    debug('Error creating label!');
+    return false;
+  }
+}
+
+function splitMessageByNewlines(message) {
+  var body = executeCommand( function() { return message.getBody(); } );
+  var line_break = getLineBreakForEmailType(message);
+  return body.split(line_break);
+}
+
+function getLineBreakForEmailType(message) {
+  return isMessageHTML(message) ? HTML_LINE_BREAK : TEXT_LINE_BREAK;
+}
+
+// Opposed to a plain text email
+function isMessageHTML(message) {
+  var raw_message = executeCommand( function() { return message.getRawContent(); } );
+  var is_html = raw_message.indexOf('Content-Type: text/html') > 0;
+  debug('Is HTML email:' + is_html);
+  return is_html;
+}
+
+function executeCommand(fp) {  
+  var msg;
+  var ret_val;
+  var last_error;
+  
+  if(EXECUTE_COMMAND_LOGGING)
+    debug(">>>>>>>>\n");
+  
+  for(var retries = NUM_RETRIES; retries > 0; retries -= 1) {
+    try {
+      ret_val = fp();
+      if(EXECUTE_COMMAND_LOGGING)
+        debug('Successfully executed command:' + fp);
+      break;
+    }
+    catch(err) {
+      last_error = err;
+      debug('Exception:' + err + ' thrown executing function:' + fp);
+      Utilities.sleep(SLEEP_TIME);
+    }
+  }
+  
+  if(EXECUTE_COMMAND_LOGGING)
+    debug('<<<<<<<<<\n');
+  
+  if(retries == 0) {
+    msg = 'Attempted to execute command:' + fp + ' ' + NUM_RETRIES + ' times without success. Error message: ' + last_error + '. Aborting  :-(';
+    Logger.log(msg);
+    throw(msg);
+  }
+  
+  return ret_val;
+}

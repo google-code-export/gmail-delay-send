@@ -1,0 +1,223 @@
+<html>
+<script>
+    function showAlert(message) {
+      showLoadingMessage(false);
+      alert(''+message);
+    }
+    
+    function showError(error) {
+      showLoadingMessage(false);
+      alert('ERROR:' + error.message);
+    }
+    
+    function getHandlers() {
+      return google.script.run.withSuccessHandler(showAlert).withFailureHandler(showError);
+    }
+    
+    function getHandlersAndHidePrefs() {
+      showLoadingMessage(true);
+      return getHandlers();
+    }
+    
+    function submitOnEnter(keycode) {
+      if (keycode == 13) { // Enter is 13
+        getAndSubmitDate();
+        
+        // Restore default value
+        var element = document.getElementById('date');
+        element.value = element.attributes['value'].value;
+      }
+    }
+    
+    function getAndSubmitDate() {
+      getHandlers().parseUserDate(document.getElementById("date").value);
+    }
+    
+    function runOnce() {
+      showLoadingMessage(true);
+      debug('Starting main');
+      getHandlers().main();
+    }
+    
+    function restorePrefsHandler(prefs_object) {
+      debug('Restoring preferences');
+    
+      for (var id_name in prefs_object) { 
+        // First try to find element with the name, if so it's a text box so set value
+        var element = document.getElementById(id_name);
+        
+        if (element) {
+          debug('    Found as a text box');
+          element.value = prefs_object[id_name];
+          continue;
+        }
+        
+        // If that fails, try to find element with name + value, which means its a checkbox
+        // to set .checked to true
+        element = document.getElementById(id_name + '_' + prefs_object[id_name]);
+        
+        if (element)  {
+          debug('    Found as a checked box.');
+          element.checked = true
+          continue;
+        }
+        error("Coulnd't find element with name: " + id_name);        
+      }
+      
+      showLoadingMessage(false);
+    }
+    
+    function showLoadingMessage(show) {
+      var loading_display = 'block';
+      var form_display = 'none';
+    
+      if(!show) {
+        var loading_display = 'none';
+        var form_display = 'block';
+      } 
+      
+      document.getElementById('status').style.display = loading_display;      
+      document.getElementById('prefs_form').style.display = form_display;
+    }
+    
+    function init() {
+      debug('Starting init');
+      google.script.run.withSuccessHandler(restorePrefsHandler).withFailureHandler(showError).getPrefs();
+    }
+    
+    function debug(msg) {
+      console.log(msg);
+    }
+    
+    function error(msg) {
+      console.error(msg);
+    }
+  </script>
+
+<head>
+  <title>Gmail Delay Send</title>
+</head>
+
+<body onload="init();" style="width:480px">
+  <h1> Gmail Delay Send </h1>
+  
+  <div id="status" style='background-color:yellow'><h3>Loading..</h3></div>
+
+  <a href="https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendFAQ" target="_blank"> Learn more about Gmail Delay Send </a>
+ 
+  <br/><br/>
+ 
+  <form id="prefs_form" style="display:none">
+    <table>
+    
+      <tr>
+        <th colspan="99">Gmail Delay Send</th>
+      </tr>
+      <tr>
+        <td>Run Gmail Delay Send</td>
+        <td align="center">
+          <input type="radio" name="triggers" id="triggers_true" value=true>On</input>
+          <input type="radio" name="triggers" id="triggers_false" value=false>Off</input>
+        </td>
+      </tr>
+      
+      <tr>
+        <th colspan="99">
+          <a href="https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendNotificationSettings" target="_blank">Notification Settings</a>
+        </th>
+      </tr>
+      
+      <tr>
+        <td>Send Email Receipts</td>
+        <td align="center">
+          <input type="radio" name="email_receipts" id="email_receipts_true" value=true>On</input>
+          <input type="radio" name="email_receipts" id="email_receipts_false" value=false>Off</input>
+        </td>
+      </tr>
+      
+      <tr>
+        <td>Error Notification</td>
+        <td align="center">
+          <input type="radio" name="error_notification" id="error_notification_true" value=true>On</input>
+          <input type="radio" name="error_notification" id="error_notification_false" value=false>Off</input>
+        </td>
+      </tr>
+       
+      <tr>
+        <td>Email me debug logs</td>
+        <td align="center">
+          <input type="radio" name="debugging" id="debugging_true" value=true>On</input>
+          <input type="radio" name="debugging" id="debugging_false" value=false>Off</input>
+        </td>
+      </tr>
+      
+      <tr>
+        <td>Bcc me</td>
+        <td align="center">
+          <input type="radio" name="bcc" id="bcc_true" value=true>On</input>
+          <input type="radio" name="bcc" id="bcc_false" value=false>Off</input>
+        </td>
+      </tr>
+       
+      <th colspan="99">
+        <a href="https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendAdvancedSettings" target="_blank">Advanced Settings</a>
+      </th>
+      
+      <tr>
+        <td>Require label</td>
+        <td align="center">
+          <input type="radio" name="require_label" id="require_label_true" value=true>On</input>
+          <input type="radio" name="require_label" id="require_label_false" value=false>Off</input>
+        </td>
+      </tr>
+       
+       <tr>
+        <td>Parsing Delimiter</td>
+        <td align="center">
+          <input type="text" name="delim" id="delim" size="9" ></input>
+        </td>
+       </tr>
+      
+      <th colspan="99">
+        <a href="https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendTimeZone" target="_blank">Current Time Zone</a>
+      </th>
+      
+      <tr>
+        <td>Current time zone</td>
+        <td align="center">
+          <input type="text" name="timezone" id="timezone" readonly></input>
+        </td>
+      </tr>
+      
+      <tr>
+        <td align="center">
+          <button type='button' onclick='getHandlersAndHidePrefs().savePrefs(document.getElementById("prefs_form"))'>Save Preferences</button>
+        </td>
+        <td align="center">
+          <button type='button' onclick='getHandlersAndHidePrefs().restoreDefaultPrefs(document.getElementById("prefs_form"))'>Restore Defaults</button>
+        </td>
+      </tr>
+    </table>
+  </form> 
+  <table>
+    <th colspan="99">
+      <a href="http://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendSpecifyingDates" target="_blank">Practice Dates</a>
+    </th>  
+     <tr>
+      <td>Enter Date</td>
+      <td align="center">
+        <input type="text" name="date" value="<Enter Date>" id="date" onkeypress="submitOnEnter(event.which)"></input>
+       </td>
+       <td align="center">
+        <button type='button' onclick='getAndSubmitDate()'>Parse Date</button>
+      </td>
+    </tr>
+    <!-- <th colspan="99">Run Gmail Delay Send</th>
+    <tr>
+      <td>
+        <button type='button' onclick='runOnce()'>Run</button>
+      </td>
+    </tr>-->
+  </table>
+</body>
+</html>

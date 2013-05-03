@@ -1,0 +1,151 @@
+/**********************
+ User Preferences
+**********************/
+function Prefs()
+{
+  var form_object = loadPrefsForForm();
+  
+  for (var prop in form_object) {
+    if (form_object[prop] == 'true')
+      this[prop] = true;
+    else if (form_object[prop] == 'false')
+      this[prop] = false;
+    else
+      this[prop] = form_object[prop];
+  }
+  
+  //NOTE the this.* fields have to match the names in the HTML.
+  
+  this.triggerOn = function() {
+    return this.triggers;
+  }
+  
+  this.receiptsOn = function() {
+    return this.email_receipts;
+  }
+  
+  this.emailNotificationsOn = function() {
+    return this.error_notification;
+  }
+  
+  this.debuggingOn = function() {
+    return this.debugging;
+  }
+  
+  this.getRequireLabel = function() {
+    return this.require_label;
+  }
+  
+  this.getTopLabelName = function() {
+    return TOP_LEVEL_LABEL;
+  }
+  
+  this.getErrorLabelName = function() {
+    return TOP_LEVEL_LABEL + '/' + DELAY_SEND_ERROR_LABEL;
+  }
+  
+  this.getSentLabelName = function() {
+    return TOP_LEVEL_LABEL + '/' + DELAY_SEND_SENT_LABEL;
+  }
+  
+  this.getToSendLabelName = function() {
+    return TOP_LEVEL_LABEL + '/' + DELAY_SEND_TO_SEND_LABEL;
+  }
+  
+  this.getDelim = function() {
+    return this.delim;
+  }
+  
+  this.getBcc = function() {
+    return this.bcc;
+  }
+  
+  this.getTimeZone = function() {
+    return getScriptTimeZone();
+  }
+  
+  this.getRegex = function() {
+    if(!this.regex) {
+      //TODO(bkutzman)
+      //this.regex = new RegExp('>\\s*' + delim + '\\s*([^<]+)\\s*<', 'm');
+      this.regex = '';
+    }
+    return new RegExp('>\\s*@\\s*([^<]+)\\s*', 'm');
+  }
+  
+  this.printPrefs = function() {
+    debug('-- Prefs --');
+    debug('  Triggers: ' + this.triggerOn());
+    debug('  Email Receipts: ' + this.receiptsOn());
+    debug('  Error Notifications: ' + this.emailNotificationsOn());
+    debug('  Debugging: ' + this.debuggingOn());
+    debug('  Top level Name: ' + this.getTopLabelName());
+    debug('  Label Required: ' + this.getRequireLabel());
+    debug('  Error Label Name: ' + this.getErrorLabelName());
+    debug('  Sent Label Name: ' + this.getSentLabelName());
+    debug('  To Send Label Name: ' + this.getToSendLabelName());
+    debug('  Bcc: ' + this.getBcc());
+    debug('  Delim: ' + this.getDelim());
+    debug('  TimeZone: ' + this.getTimeZone());
+    debug('------------');
+  }
+}
+
+function getUserPrefs(force_reload) {
+  if(USER_PREFS == null || force_reload) {
+    debug('User preferences object empty.. reloading..');
+    USER_PREFS = new Prefs();
+    USER_PREFS.regex = new RegExp(USER_PREFS.getDelim() + ' [^' + USER_PREFS.getDelim() + ']+$','i');
+  }
+  return USER_PREFS;
+}
+
+function savePrefsFromForm(form_object) {
+  debug('Saving preferences from form object which contains: ');
+  
+  for (var prop in form_object)
+    debug(' - ' + prop + ' => ' + form_object[prop]);
+  
+  executeCommand(function() { ScriptProperties.setProperties(form_object, true) });
+  
+  var prefs = getUserPrefs(true);
+  
+  debug('Refreshed preference object now contains:');
+  prefs.printPrefs();
+  
+  var message = 'Saved new preferences. Gmail Delay Send status: ';
+  
+  if (prefs.triggerOn()) {
+    message += 'RUNNING';
+    setupTrigger(TRIGGER_FUNCTION, TRIGGER_MINUTE_TIMER);
+  }
+  else {
+    message += 'STOPPED';
+    removeTrigger(TRIGGER_FUNCTION);
+  }
+  
+  return message;
+}
+
+function loadPrefsForForm() {
+  prefs = executeCommand(function() { return ScriptProperties.getProperties(); });
+  
+  for(default_prop in DEFAULT_PREFS) {
+    if(prefs[default_prop] == undefined) {
+      prefs[default_prop] = DEFAULT_PREFS[default_prop];
+      debug('Loading default property for key:' + default_prop + ' value: ' + prefs[default_prop]);
+    }
+  }
+  
+  // timezone is a special case b/c it's ready only.
+  prefs['timezone'] = getScriptTimeZone();
+  
+  return prefs
+}
+
+function clearPreferences(form_object) {
+  executeCommand(function() { ScriptProperties.deleteAllProperties(); });
+  
+  //TODO Can I refresh page automatically?
+  return 'Defaults restored. Please refresh page.';
+}

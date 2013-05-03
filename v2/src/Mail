@@ -1,0 +1,81 @@
+/**********************
+ Mail
+**********************/
+
+function sendEmailToSelf(subject, body) {
+  var email_footer_text_size = 10;
+  
+  if(body.length == 0)
+     return;
+
+  var yourEmailAddress = executeCommand(function() { return Session.getActiveUser().getEmail(); } );
+  
+  // Add footer to emails with helpful links
+  body += '<br/>';
+  body += '<hr/>';
+  body += '<table width="600" style="width:600px" cellspacing="0" cellpadding="0" align="center">';
+  body += '<tr style="font-size:' + email_footer_text_size +'px;"> <a href="http://code.google.com/p/gmail-delay-send"> ' + SCRIPT_NAME + ' Homepage </a>';
+  body += '|| <a href="http://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendErrors"> Common Problems </a>';
+  body += '|| Script Version: ' + SCRIPT_VERSION + ' </tr>';
+  body += '</table>';
+  
+  options = {noReply: true, replyTo: SCRIPT_NAME, htmlBody: body};
+  
+  executeCommand( function() { MailApp.sendEmail(yourEmailAddress, subject, body, options);} );
+}
+
+
+// returns true/false if the message was sent
+function sendMessage(message, metaObj)
+{
+  // Copies the given thread into another email
+  // sends that mail, archive the old thread, and remove the label.
+  var from_arr = executeCommand(function() { return message.getFrom(); } ).split(' <');
+  var name = from_arr[0];
+  var from = from_arr[1].replace('>','');
+  
+  var body = metaObj.newBody;
+  var cc = executeCommand(function() { return message.getCc() });
+  var bcc = executeCommand(function() { return message.getBcc() });
+  var to = executeCommand(function() { return message.getTo()});
+  var subject = executeCommand(function() { return message.getSubject() });
+  var attach = executeCommand(function() { return message.getAttachments() });
+ 
+  if(getUserPrefs().getBcc())
+    bcc = [bcc, from].join(',');
+  
+  executeCommand( 
+    function() {
+      GmailApp.sendEmail(to, subject, body, {htmlBody: body, cc: cc, bcc: bcc, from: from, attachments: attach, name: name} );
+    });
+  
+  var log = '<table border="1">';
+  log += '<tr><th> Date Sent </th><th> To </th><th> CC </th><th> BCC </th><th> From </th><th> Subject </th><th> Body </th><th> Attachments </th></tr>';
+  log += '<tr>';
+  log += '<td>' + new Date() + '</td>';
+  log += '<td>' + to + '</td>';
+  log += '<td>' + cc + '</td>';
+  log += '<td>' + bcc + '</td>';
+  log += '<td>' + from + '</td>';
+  log += '<td>' + subject + '</td>';
+  log += '<td>' + body + '</td>';
+   
+  log += '<td>';
+  
+  // Objects are in the form of blobs
+  for(var i=0; i<attach.length; i++)
+    log += ' ' + attach[i].getName() + '<br/>';
+  
+  log += '</td>';
+            
+  log += '</tr></table>';
+  
+  debug(log);
+  
+  receipts.push(log);
+  
+  applyLabelToMessage(message, getUserPrefs().getSentLabelName());
+  GmailApp.moveMessageToTrash(message);
+
+  return true;
+}

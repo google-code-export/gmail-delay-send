@@ -1,0 +1,52 @@
+/**********************
+ GLOBALS
+**********************/
+var SCRIPT_VERSION = 8.0;
+
+// Top level label name
+var TOP_LEVEL_LABEL = 'GmailDelaySend';
+
+// Malformed messages will be placed in this label
+var DELAY_SEND_ERROR_LABEL = 'Errors';
+
+// Sent messages will be placed under this label
+var DELAY_SEND_SENT_LABEL = 'Sent';
+
+// Messages to send will be placed under this label
+var DELAY_SEND_TO_SEND_LABEL = 'ToSend';
+
+// Array of notifications  
+var receipts = [];
+
+// Global preferences object
+var USER_PREFS = null;
+
+var parse_errors = [];
+
+var EXECUTE_COMMAND_LOGGING = false;
+
+//HTML and plain/text emails have different line breaks
+HTML_LINE_BREAK = '<br>';
+TEXT_LINE_BREAK = '<br />';
+
+// Retry logic
+var NUM_RETRIES = 5;
+
+// In milliseconds
+var SLEEP_TIME = 1500;
+
+var SCRIPT_NAME = "GMail Delay Send";
+
+var TRIGGER_FUNCTION="main";
+var TRIGGER_MINUTE_TIMER=5;
+
+/* NOTE these names must match the 'name' attribute in HTML */
+var DEFAULT_PREFS = {
+  bcc: 'true',
+  require_label: 'true',
+  email_receipts: 'false',
+  triggers: 'false',
+  debugging: 'false',
+  error_notification: 'true',
+  delim: '@',
+};

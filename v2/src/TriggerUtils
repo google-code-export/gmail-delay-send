@@ -1,0 +1,43 @@
+/**********************
+ Trigger stuff
+**********************/
+function findTrigger(nameOfFunction) {
+  var triggers =  executeCommand( (function(){ return ScriptApp.getScriptTriggers();}));
+  for(i=0; i<triggers.length; i++)
+    if(triggers[i].getHandlerFunction() == nameOfFunction)
+      return triggers[i];
+  return null;
+}
+
+function isTriggerAlreadySet(nameOfFunction) {
+  return findTrigger(nameOfFunction) != null;
+}
+
+function createTimeTrigger(functionName, minutes) {
+  executeCommand( ( function() {
+    ScriptApp.newTrigger(functionName)
+      .timeBased()
+      .everyMinutes(minutes)
+      .create();
+  }));
+}
+
+function deleteTrigger(functionName) {
+  executeCommand((function(){ ScriptApp.deleteTrigger(findTrigger(functionName)) }));
+}
+
+function removeTrigger(functionName) {
+  if(isTriggerAlreadySet(functionName))
+    deleteTrigger(functionName);
+}
+
+function setupTrigger(functionName, minutes) {
+  debug("Setting up trigger for function:"+functionName+" minutes: "+minutes);
+  if(!isTriggerAlreadySet(functionName))
+  {
+    debug("Trigger has not already been set for function:"+functionName+". Setting now to every: "+minutes+" minutes");
+    createTimeTrigger(functionName,minutes);
+  }
+  else
+    debug("Trigger is already set for function:"+functionName);
+}
