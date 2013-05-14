@@ -1,8 +1,58 @@
 /**********************
  Utils
 **********************/
-function getScriptTimeZone() {
-  return executeCommand( (function(){ return Session.getTimeZone();}));
+function getTimeZoneOffsetHours() {
+  var time_zone_string = getUserPrefs().getTimeZone();
+  debug('User timezone string:' + time_zone_string);
+  var time_zone_offset_hours = parseFloat(/GMT\+?([-\d.]+)/.exec(time_zone_string)[1]);
+  debug('User time zone offset hours:' + time_zone_offset_hours);
+  
+  //Note that a negative return value from getTimezoneOffset() indicates
+  //that the current location is ahead of UTC, while a positive value indicates
+  //that the location is behind UTC
+  return time_zone_offset_hours;
+}
+
+function getUserDate() {
+  var user_timezone_offset_ms = getTimeZoneOffsetHours() * 60 * 60 * 1000;
+  var server_date = new Date();
+  var server_time_ms = server_date.getTime();
+  var server_timezone_offset_ms = server_date.getTimezoneOffset() * 60 * 1000; //getTimezoneOffset() returns minutes
+  var utc_time_ms = server_time_ms + server_timezone_offset_ms;
+  var utc_date = new Date(utc_time_ms);
+  var user_time_ms = utc_time_ms + user_timezone_offset_ms;
+  var user_date = new Date(user_time_ms);
+  
+  debug('User date: ' + user_date);
+  debug('Server date: ' + server_date);
+  
+  /*
+  debug('User timzezone offset: ' + user_timezone_offset_ms);
+  
+  debug('User ms: ' + user_date.getTime());
+  
+  debug('Server time: ' + server_date.getTime());
+  debug('UTC date: ' + utc_date);
+  debug('UTC time: ' + utc_date.getTime());
+  debug('Server timzone offset:' + server_timezone_offset_ms);
+  */
+  
+  return user_date;
+
+}
+
+function parseDateToUserTimezoneString(str) {
+  Date.setRelativeTo(getUserDate());
+  
+  debug('Relative to:' + Date.relativeTo);
+  
+  var date = parseDate(str);
+  
+  // Format a date, but cut off timezone
+  if(date)
+    return date.toDateString() + ' ' + ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2);
+  else
+    return null;
 }
 
 function parseDate(str) {
@@ -13,7 +63,8 @@ function createLabels() {
   labels_to_create = [getUserPrefs().getTopLabelName(),
                       getUserPrefs().getToSendLabelName(),
                       getUserPrefs().getErrorLabelName(),
-                      getUserPrefs().getSentLabelName()];
+                      getUserPrefs().getSentLabelName(),
+                      ];
   
   for(var i=0; i<labels_to_create.length; i++) {    
     var user_label = labels_to_create[i];    

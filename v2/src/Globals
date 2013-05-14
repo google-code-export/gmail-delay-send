@@ -49,4 +49,5 @@ var DEFAULT_PREFS = {
   debugging: 'false',
   error_notification: 'true',
   delim: '@',
+  timezone: '(GMT-08:00) Pacific Time',
 };

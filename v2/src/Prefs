@@ -43,7 +43,7 @@ function Prefs()
   this.getErrorLabelName = function() {
     return TOP_LEVEL_LABEL + '/' + DELAY_SEND_ERROR_LABEL;
   }
-  
+
   this.getSentLabelName = function() {
     return TOP_LEVEL_LABEL + '/' + DELAY_SEND_SENT_LABEL;
   }
@@ -61,16 +61,11 @@ function Prefs()
   }
   
   this.getTimeZone = function() {
-    return getScriptTimeZone();
+    return this.timezone;
   }
   
   this.getRegex = function() {
-    if(!this.regex) {
-      //TODO(bkutzman)
-      //this.regex = new RegExp('>\\s*' + delim + '\\s*([^<]+)\\s*<', 'm');
-      this.regex = '';
-    }
-    return new RegExp('>\\s*@\\s*([^<]+)\\s*', 'm');
+    return new RegExp('>\\s*' + this.delim + '\\s*([^<]+)\\s*', 'm');
   }
   
   this.printPrefs = function() {
@@ -106,21 +101,19 @@ function savePrefsFromForm(form_object) {
   for (var prop in form_object)
     debug(' - ' + prop + ' => ' + form_object[prop]);
   
-  executeCommand(function() { ScriptProperties.setProperties(form_object, true) });
+  executeCommand(function() { UserProperties.setProperties(form_object, true) });
   
   var prefs = getUserPrefs(true);
   
   debug('Refreshed preference object now contains:');
   prefs.printPrefs();
   
-  var message = 'Saved new preferences. Gmail Delay Send status: ';
+  var message = 'Saved new preferences.';
   
   if (prefs.triggerOn()) {
-    message += 'RUNNING';
     setupTrigger(TRIGGER_FUNCTION, TRIGGER_MINUTE_TIMER);
   }
   else {
-    message += 'STOPPED';
     removeTrigger(TRIGGER_FUNCTION);
   }
   
@@ -128,7 +121,7 @@ function savePrefsFromForm(form_object) {
 }
 
 function loadPrefsForForm() {
-  prefs = executeCommand(function() { return ScriptProperties.getProperties(); });
+  prefs = executeCommand(function() { return UserProperties.getProperties(); });
   
   for(default_prop in DEFAULT_PREFS) {
     if(prefs[default_prop] == undefined) {
@@ -137,14 +130,11 @@ function loadPrefsForForm() {
     }
   }
   
-  // timezone is a special case b/c it's ready only.
-  prefs['timezone'] = getScriptTimeZone();
-  
   return prefs
 }
 
 function clearPreferences(form_object) {
-  executeCommand(function() { ScriptProperties.deleteAllProperties(); });
+  executeCommand(function() { UserProperties.deleteAllProperties(); });
   
   //TODO Can I refresh page automatically?
   return 'Defaults restored. Please refresh page.';

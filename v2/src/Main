@@ -3,15 +3,30 @@
 **********************/
 
 function test() {
-  Logger.log('Created labels:' + createLabels());
+  var user_timezone_offset_ms = getTimeZoneOffsetHours() * 60 * 60 * 1000;
+  var server_date = new Date();
+  var server_time_ms = server_date.getTime();
+  var server_timezone_offset_ms = server_date.getTimezoneOffset() * 60 * 1000; //getTimezoneOffset() returns minutes
+  var utc_time_ms = server_time_ms + server_timezone_offset_ms;
+  var utc_date = new Date(utc_time_ms);
+  var user_time_ms = utc_time_ms + user_timezone_offset_ms;
+  var user_date = new Date(user_time_ms);
+  
+  debug('User timzezone offset: ' + user_timezone_offset_ms);
+  debug('User date: ' + user_date);
+  debug('User ms: ' + user_date.getTime());
+  debug('Server date: ' + server_date);
+  debug('Server time: ' + server_date.getTime());
+  debug('UTC date: ' + utc_date);
+  debug('UTC time: ' + utc_date.getTime());
+  debug('Server timzone offset:' + server_timezone_offset_ms);
   
   return;
 }
   
 function testEmail() {
   var message = GmailApp.getDraftMessages()[0];
-  
-  debug('First line:' + splitMessageByNewlines(message).shift());
+ 
   
   return;
   
@@ -114,13 +129,7 @@ function parseMessage(message) {
       debug('Date to send: ' + metaData.sendDate); 
       metaData.originalBody = originalBody;
       metaData.successful_parse = true;
-      metaData.newBody = splitMessageByNewlines(message).slice(1).join(getLineBreakForEmailType(message)); // Everything but the first line.
-     
-      //TODO(bkutzman)
-      debug('New body:' + metaData.newBody);
-      debug('Original Body:' + originalBody);
-      
-      
+      metaData.newBody = splitMessageByNewlines(message).slice(1).join(getLineBreakForEmailType(message)); // Everything but the first line.     
       metaData.error_msg = null;
     }
   }
@@ -129,14 +138,14 @@ function parseMessage(message) {
 
 
 function timeToSendMessage(messageSendDate) {
-  var currentDate = new Date();
+  var currentDate = getUserDate();
   
   // compare returns -1 if sendDate less than current date (eg. it has already passed)
   // compare returns 0 if the dates are equal
   //var timeToSend = Date.compare(messageSendDate, currentDate) < 1;
   var timeToSend = messageSendDate.getTime() <= currentDate.getTime();
   
-  debug('Detected time to send message: ' + timeToSend + '. Send Date: ' + messageSendDate + ' Current date:' + currentDate);
+  debug('Detected time to send message: ' + timeToSend + '. Send Date: ' + messageSendDate + ' Current user date:' + currentDate);
    
   return timeToSend;
 }

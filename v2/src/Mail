@@ -74,7 +74,6 @@ function sendMessage(message, metaObj)
   
   receipts.push(log);
   
-  applyLabelToMessage(message, getUserPrefs().getSentLabelName());
   GmailApp.moveMessageToTrash(message);
 
   return true;
