@@ -21,6 +21,9 @@ var receipts = [];
 // Global preferences object
 var USER_PREFS = null;
 
+// What suffix is added to bcc messages
+var BCC_SUFFIX = '+gmaildelaysend';
+
 var parse_errors = [];
 
 var EXECUTE_COMMAND_LOGGING = false;
@@ -30,7 +33,7 @@ HTML_LINE_BREAK = '<br>';
 TEXT_LINE_BREAK = '<br />';
 
 // Retry logic
-var NUM_RETRIES = 5;
+var NUM_RETRIES = 10;
 
 // In milliseconds
 var SLEEP_TIME = 1500;
@@ -42,12 +45,12 @@ var TRIGGER_MINUTE_TIMER=5;
 
 /* NOTE these names must match the 'name' attribute in HTML */
 var DEFAULT_PREFS = {
-  bcc: 'true',
+  bcc: 'false',
   require_label: 'true',
-  email_receipts: 'false',
+  email_receipts: 'true',
   triggers: 'false',
   debugging: 'false',
   error_notification: 'true',
   delim: '@',
-  timezone: '(GMT-08:00) Pacific Time',
+  timezone: '(GMT-07:00) Pacific Daylight Time',
 };

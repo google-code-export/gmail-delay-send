@@ -42,7 +42,11 @@ function sendMessage(message, metaObj)
   var attach = executeCommand(function() { return message.getAttachments() });
  
   if(getUserPrefs().getBcc())
-    bcc = [bcc, from].join(',');
+    var tmp_arr = from.split('@');
+    tmp_arr.splice(1, 0, BCC_SUFFIX, '@');
+    var from_bcc = tmp_arr.join('');
+    debug('User wants self bcc: ' + from_bcc);
+    bcc = [bcc, from_bcc].join(',');
   
   executeCommand( 
     function() {
