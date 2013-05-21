@@ -27,6 +27,7 @@ function test() {
 function testEmail() {
   var message = GmailApp.getDraftMessages()[0];
  
+  debug(message.getBody());
   
   return;
   
@@ -97,9 +98,9 @@ function parseMessage(message) {
   
   var metaData = new ThreadMetaData();
   
-  var match = prefs.getRegex().exec(dateLine);
-  
-  debug('Match result:' + match + ' From regex: ' + prefs.getRegex());
+  var regex = isMessageHTML(message) ? prefs.getHTMLRegex() : prefs.getTextRegex()
+  var match = regex.exec(dateLine);
+  debug('Match result:' + match + ' From regex: ' + regex);
   
   if(!match || match.length < 2) {
     metaData.found_delim = false;
@@ -129,7 +130,7 @@ function parseMessage(message) {
       debug('Date to send: ' + metaData.sendDate); 
       metaData.originalBody = originalBody;
       metaData.successful_parse = true;
-      metaData.newBody = splitMessageByNewlines(message).slice(1).join(getLineBreakForEmailType(message)); // Everything but the first line.     
+      metaData.newBody = splitMessageByNewlines(message).slice(1).join(getLineJoinForEmailType(message)); // Everything but the first line.    
       metaData.error_msg = null;
     }
   }

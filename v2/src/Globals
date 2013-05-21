@@ -31,6 +31,8 @@ var EXECUTE_COMMAND_LOGGING = false;
 //HTML and plain/text emails have different line breaks
 HTML_LINE_BREAK = '<br>';
 TEXT_LINE_BREAK = '<br />';
+HTML_JOIN_BREAK = HTML_LINE_BREAK;
+TEXT_JOIN_BREAK = '';
 
 // Retry logic
 var NUM_RETRIES = 10;

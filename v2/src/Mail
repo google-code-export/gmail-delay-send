@@ -8,7 +8,7 @@ function sendEmailToSelf(subject, body) {
   if(body.length == 0)
      return;
 
-  var yourEmailAddress = executeCommand(function() { return Session.getActiveUser().getEmail(); } );
+  var yourEmailAddress = executeCommand(function() { return Session.getEffectiveUser().getEmail(); } );
   
   // Add footer to emails with helpful links
   body += '<br/>';
@@ -41,16 +41,20 @@ function sendMessage(message, metaObj)
   var subject = executeCommand(function() { return message.getSubject() });
   var attach = executeCommand(function() { return message.getAttachments() });
  
-  if(getUserPrefs().getBcc())
+  if(getUserPrefs().getBcc()) {
     var tmp_arr = from.split('@');
     tmp_arr.splice(1, 0, BCC_SUFFIX, '@');
     var from_bcc = tmp_arr.join('');
     debug('User wants self bcc: ' + from_bcc);
     bcc = [bcc, from_bcc].join(',');
+  }
+    
+  // To we want to include HTML body in email?
+  var htmlBody = isMessageHTML(message) ? body : null;
   
   executeCommand( 
     function() {
-      GmailApp.sendEmail(to, subject, body, {htmlBody: body, cc: cc, bcc: bcc, from: from, attachments: attach, name: name} );
+      GmailApp.sendEmail(to, subject, body, {htmlBody: htmlBody, cc: cc, bcc: bcc, from: from, attachments: attach, name: name} );
     });
   
   var log = '<table border="1">';

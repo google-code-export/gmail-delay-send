@@ -64,9 +64,14 @@ function Prefs()
     return this.timezone;
   }
   
-  this.getRegex = function() {
+  this.getHTMLRegex = function() {
     return new RegExp('>\\s*' + this.delim + '\\s*([^<]+)\\s*', 'm');
   }
+  
+  this.getTextRegex = function() {
+    return new RegExp('^\\s*' + this.delim + '\\s*(.*)+\\s*', 'm');
+  }
+  
   
   this.printPrefs = function() {
     debug('-- Prefs --');
@@ -82,6 +87,8 @@ function Prefs()
     debug('  Bcc: ' + this.getBcc());
     debug('  Delim: ' + this.getDelim());
     debug('  TimeZone: ' + this.getTimeZone());
+    debug('  getHTMLRegex: ' + this.getHTMLRegex());
+    debug('  getTextRegex: ' + this.getTextRegex());
     debug('------------');
   }
 }

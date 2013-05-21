@@ -161,6 +161,10 @@ function getLineBreakForEmailType(message) {
   return isMessageHTML(message) ? HTML_LINE_BREAK : TEXT_LINE_BREAK;
 }
 
+function getLineJoinForEmailType(message) {
+  return isMessageHTML(message) ? HTML_JOIN_BREAK : TEXT_JOIN_BREAK;
+}
+
 // Opposed to a plain text email
 function isMessageHTML(message) {
   var raw_message = executeCommand( function() { return message.getRawContent(); } );

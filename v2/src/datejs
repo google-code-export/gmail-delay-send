@@ -2012,7 +2012,7 @@ Date.CultureInfo = {
     ]);
 
 ﻿  // starting rule for general purpose grammar
-    g._start = _.process(_.set([ g.date, g.time, g.expression ], 
+   g._start = _.process(_.set([ g.date, g.time, g.expression ], 
         g.generalDelimiter, g.whiteSpace), t.finish);
 ﻿  
 ﻿  // real starting rule: tries selected formats first, 
