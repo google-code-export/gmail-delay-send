@@ -1,44 +1,91 @@
 /**********************
  Utils
 **********************/
-function getTimeZoneOffsetHours() {
-  var time_zone_string = getUserPrefs().getTimeZone();
-  debug('User timezone string:' + time_zone_string);
-  var time_zone_offset_hours = parseFloat(/GMT\+?([-\d.]+)/.exec(time_zone_string)[1]);
-  debug('User time zone offset hours:' + time_zone_offset_hours);
+function getTimeZoneString() {
+  var timezone_string = getUserPrefs().getTimeZone();
   
-  //Note that a negative return value from getTimezoneOffset() indicates
-  //that the current location is ahead of UTC, while a positive value indicates
-  //that the location is behind UTC
-  return time_zone_offset_hours;
+  debug('User timezone:' + timezone_string);
+  
+  if(timezone_string == DEFAULT_TIMEZONE) {
+    timezone_string = CalendarApp.getDefaultCalendar().getTimeZone();
+    debug('Loading timezone from calendar: ' + timezone_string);
+  }
+  
+  return timezone_string;  
 }
 
 function getUserDate() {
-  var user_timezone_offset_ms = getTimeZoneOffsetHours() * 60 * 60 * 1000;
-  var server_date = new Date();
-  var server_time_ms = server_date.getTime();
-  var server_timezone_offset_ms = server_date.getTimezoneOffset() * 60 * 1000; //getTimezoneOffset() returns minutes
-  var utc_time_ms = server_time_ms + server_timezone_offset_ms;
-  var utc_date = new Date(utc_time_ms);
-  var user_time_ms = utc_time_ms + user_timezone_offset_ms;
-  var user_date = new Date(user_time_ms);
-  
-  debug('User date: ' + user_date);
-  debug('Server date: ' + server_date);
-  
-  /*
-  debug('User timzezone offset: ' + user_timezone_offset_ms);
-  
-  debug('User ms: ' + user_date.getTime());
-  
-  debug('Server time: ' + server_date.getTime());
-  debug('UTC date: ' + utc_date);
-  debug('UTC time: ' + utc_date.getTime());
-  debug('Server timzone offset:' + server_timezone_offset_ms);
-  */
-  
-  return user_date;
+  var user_timezone_string = getTimeZoneString();
+  var user_date_string = Utilities.formatDate(new Date(), user_timezone_string, "yyyy/MM/dd HH:mm:ss");
+  debug('User date string:' + user_date_string);
+  return new Date(user_date_string);
+}
 
+function getMessageDateAndNewBody(message) {
+  return isMessageHTML(message) ? getHTMLMessageDateAndNewBody(message) : getTextMessageDateAndNewBody(message);
+}
+
+function getHTMLMessageDateAndNewBody(message) {
+  var match = doParsingWork(message, getUserPrefs().getHTMLRegex());
+  var date_string = null;
+  var new_body = null;
+  
+  if(match && match.length > 3)
+  {
+    // We found a match, but not sure that delim is in the date_string
+    var possible_datestring = match[2];
+    debug('Found possible datestring: ' + possible_datestring);
+    
+    // Check if out delim is in the string
+    var match2 = (new RegExp(getUserPrefs().getDelim() + '(.*)')).exec(possible_datestring);
+    
+    if(match2 && match2.length > 1) {
+      date_string = match2[1];
+      new_body = match[1] + match[3];
+    }
+    else
+      debug('Could not find delim in possible datestring');
+  }
+
+  debug('Returning date_string: ' + date_string);
+
+  return [date_string, new_body];
+}
+
+function getTextMessageDateAndNewBody(message) {
+  var match = doParsingWork(message, getUserPrefs().getTextRegex());
+  var date_string = null;
+  var new_body = null;
+  
+  if(match && match.length > 2)
+  {
+    date_string = match[1];
+    new_body = match[2];
+  }
+
+  debug('Returning date_string: ' + date_string);
+  
+  new_body = new_body.split(TEXT_LINE_BREAKS).join('\n');
+
+  return [date_string, new_body];
+}
+
+function doParsingWork(message, regex) {
+  var body = executeCommand(function(){return message.getBody();});  
+  var match = regex.exec(body);
+  
+  debug('Parsing date and body from email with regex:' + regex);
+  debug(' Matches:' + match);
+  
+  return match;
+}
+
+function getMessageWithoutDate(message) {
+return splitMessageByNewlines(message).slice(1).join(getLineJoinForEmailType(message));
+}
+
+function dateToStringWithoutTimezone(date) {
+  return date.toDateString() + ' ' + ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2);
 }
 
 function parseDateToUserTimezoneString(str) {
@@ -50,7 +97,7 @@ function parseDateToUserTimezoneString(str) {
   
   // Format a date, but cut off timezone
   if(date)
-    return date.toDateString() + ' ' + ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2);
+    return dateToStringWithoutTimezone(date);
   else
     return null;
 }
@@ -149,20 +196,6 @@ function createLabel(label) {
     debug('Error creating label!');
     return false;
   }
-}
-
-function splitMessageByNewlines(message) {
-  var body = executeCommand( function() { return message.getBody(); } );
-  var line_break = getLineBreakForEmailType(message);
-  return body.split(line_break);
-}
-
-function getLineBreakForEmailType(message) {
-  return isMessageHTML(message) ? HTML_LINE_BREAK : TEXT_LINE_BREAK;
-}
-
-function getLineJoinForEmailType(message) {
-  return isMessageHTML(message) ? HTML_JOIN_BREAK : TEXT_JOIN_BREAK;
 }
 
 // Opposed to a plain text email

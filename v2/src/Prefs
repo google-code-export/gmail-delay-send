@@ -61,17 +61,29 @@ function Prefs()
   }
   
   this.getTimeZone = function() {
-    return this.timezone;
+    return this.localzone;
   }
   
+  this.getTriggerMin = function() {
+    return this.trigger_min;
+  }
+  
+  /**
+  match[1] -- header
+  match[2] -- delim + date string
+  match[3] -- rest of message
+  **/
   this.getHTMLRegex = function() {
-    return new RegExp('>\\s*' + this.delim + '\\s*([^<]+)\\s*', 'm');
+    return new RegExp('^([\\s\\S]*?>)([^<]+)(<[\\s\\S]*)');
   }
   
+  /**
+  match[1] -- date string
+  match[2] -- rest of message
+  **/
   this.getTextRegex = function() {
-    return new RegExp('^\\s*' + this.delim + '\\s*(.*)+\\s*', 'm');
+    return new RegExp('^\\s*' + this.delim + '([^<]*)(<[\\s\\S]*)');
   }
-  
   
   this.printPrefs = function() {
     debug('-- Prefs --');
@@ -84,6 +96,7 @@ function Prefs()
     debug('  Error Label Name: ' + this.getErrorLabelName());
     debug('  Sent Label Name: ' + this.getSentLabelName());
     debug('  To Send Label Name: ' + this.getToSendLabelName());
+    debug('  Trigger Minutes: ' + this.getTriggerMin());
     debug('  Bcc: ' + this.getBcc());
     debug('  Delim: ' + this.getDelim());
     debug('  TimeZone: ' + this.getTimeZone());
@@ -118,7 +131,8 @@ function savePrefsFromForm(form_object) {
   var message = 'Saved new preferences.';
   
   if (prefs.triggerOn()) {
-    setupTrigger(TRIGGER_FUNCTION, TRIGGER_MINUTE_TIMER);
+    deleteTriggerIfSet(TRIGGER_FUNCTION);
+    setupTrigger(TRIGGER_FUNCTION, prefs.getTriggerMin());
   }
   else {
     removeTrigger(TRIGGER_FUNCTION);

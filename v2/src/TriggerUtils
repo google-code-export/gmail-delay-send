@@ -26,13 +26,17 @@ function deleteTrigger(functionName) {
   executeCommand((function(){ ScriptApp.deleteTrigger(findTrigger(functionName)) }));
 }
 
+function deleteTriggerIfSet(functionName) {
+  isTriggerAlreadySet(functionName) && deleteTrigger(functionName);
+}
+
 function removeTrigger(functionName) {
   if(isTriggerAlreadySet(functionName))
     deleteTrigger(functionName);
 }
 
 function setupTrigger(functionName, minutes) {
-  debug("Setting up trigger for function:"+functionName+" minutes: "+minutes);
+  debug('Setting up trigger for function:' + functionName + ' minutes: ' + minutes);
   if(!isTriggerAlreadySet(functionName))
   {
     debug("Trigger has not already been set for function:"+functionName+". Setting now to every: "+minutes+" minutes");

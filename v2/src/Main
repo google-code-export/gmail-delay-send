@@ -3,31 +3,15 @@
 **********************/
 
 function test() {
-  var user_timezone_offset_ms = getTimeZoneOffsetHours() * 60 * 60 * 1000;
-  var server_date = new Date();
-  var server_time_ms = server_date.getTime();
-  var server_timezone_offset_ms = server_date.getTimezoneOffset() * 60 * 1000; //getTimezoneOffset() returns minutes
-  var utc_time_ms = server_time_ms + server_timezone_offset_ms;
-  var utc_date = new Date(utc_time_ms);
-  var user_time_ms = utc_time_ms + user_timezone_offset_ms;
-  var user_date = new Date(user_time_ms);
-  
-  debug('User timzezone offset: ' + user_timezone_offset_ms);
-  debug('User date: ' + user_date);
-  debug('User ms: ' + user_date.getTime());
-  debug('Server date: ' + server_date);
-  debug('Server time: ' + server_date.getTime());
-  debug('UTC date: ' + utc_date);
-  debug('UTC time: ' + utc_date.getTime());
-  debug('Server timzone offset:' + server_timezone_offset_ms);
-  
-  return;
+  debug(getUserDate());
 }
   
 function testEmail() {
   var message = GmailApp.getDraftMessages()[0];
  
-  debug(message.getBody());
+  var body = message.getBody();
+  
+  debug(body);
   
   return;
   
@@ -89,48 +73,39 @@ function ThreadMetaData()
 function parseMessage(message) {
   var prefs = getUserPrefs();
   var messageDate = executeCommand(function(){return message.getDate();});
-  var originalBody = executeCommand(function(){return message.getBody();});
-  
-  // dateline must be the first line in email.
-  var dateLine = splitMessageByNewlines(message).shift();
-  
-  debug('Processing email with dateLine: ' + dateLine);
-  
   var metaData = new ThreadMetaData();
+    
+  var message_date_and_new_body_arr = getMessageDateAndNewBody(message);
+  var date_line = message_date_and_new_body_arr[0];
+  var message_new_body = message_date_and_new_body_arr[1];
   
-  var regex = isMessageHTML(message) ? prefs.getHTMLRegex() : prefs.getTextRegex()
-  var match = regex.exec(dateLine);
-  debug('Match result:' + match + ' From regex: ' + regex);
-  
-  if(!match || match.length < 2) {
+  if(!date_line) {
     metaData.found_delim = false;
     metaData.successful_parse = false;
-    metaData.error_msg = 'Could not find your special character: "' + prefs.getDelim() + '" in first line of email body: "' + dateLine + '"';
+    metaData.error_msg = 'Could not find your special character: "' + prefs.getDelim() + '" in FIRST line of email body';
   }
   else {
     // We successfully found the delimeter
     metaData.found_delim = true;
 
-    var date_string = match[1];
-   
-    debug('Date String: ' + date_string + ' Relative to date message was composed: ' + messageDate);
+    debug('Date String: ' + date_line + ' Relative to date message was composed: ' + messageDate);
     
     Date.setRelativeTo(messageDate);
     
-    metaData.sendDate = parseDate(date_string);
+    metaData.sendDate = parseDate(date_line);
  
     // We could not parse the data successfully
     if(metaData.sendDate == null) {
-      debug('Error Parsing date string: "' + date_string + '"');
-      metaData.error_msg = 'Error parsing date string: "' + date_string + '"';
+      debug('Error Parsing date string: ' + date_line);
+      metaData.error_msg = 'Error parsing date string: ' + date_line;
       metaData.successful_parse = false;
     }
     else {
       // Success parsing
-      debug('Date to send: ' + metaData.sendDate); 
-      metaData.originalBody = originalBody;
+      debug('Date to send: ' + dateToStringWithoutTimezone(metaData.sendDate)); 
+      metaData.originalBody = executeCommand(function(){return message.getBody();});;
       metaData.successful_parse = true;
-      metaData.newBody = splitMessageByNewlines(message).slice(1).join(getLineJoinForEmailType(message)); // Everything but the first line.    
+      metaData.newBody = message_new_body;
       metaData.error_msg = null;
     }
   }
@@ -146,7 +121,7 @@ function timeToSendMessage(messageSendDate) {
   //var timeToSend = Date.compare(messageSendDate, currentDate) < 1;
   var timeToSend = messageSendDate.getTime() <= currentDate.getTime();
   
-  debug('Detected time to send message: ' + timeToSend + '. Send Date: ' + messageSendDate + ' Current user date:' + currentDate);
+  debug('Detected time to send message: ' + timeToSend + '. Send Date: ' + dateToStringWithoutTimezone(messageSendDate) + ' Current user date:' + dateToStringWithoutTimezone(currentDate));
    
   return timeToSend;
 }

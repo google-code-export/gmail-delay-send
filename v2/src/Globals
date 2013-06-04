@@ -15,6 +15,9 @@ var DELAY_SEND_SENT_LABEL = 'Sent';
 // Messages to send will be placed under this label
 var DELAY_SEND_TO_SEND_LABEL = 'ToSend';
 
+// Use default google calendar to determine user timezone
+var DEFAULT_TIMEZONE = 'default';
+
 // Array of notifications  
 var receipts = [];
 
@@ -28,14 +31,11 @@ var parse_errors = [];
 
 var EXECUTE_COMMAND_LOGGING = false;
 
-//HTML and plain/text emails have different line breaks
-HTML_LINE_BREAK = '<br>';
-TEXT_LINE_BREAK = '<br />';
-HTML_JOIN_BREAK = HTML_LINE_BREAK;
-TEXT_JOIN_BREAK = '';
-
 // Retry logic
 var NUM_RETRIES = 10;
+
+// Text messages are composed with '<br />'
+var TEXT_LINE_BREAKS = '<br />';
 
 // In milliseconds
 var SLEEP_TIME = 1500;
@@ -54,5 +54,6 @@ var DEFAULT_PREFS = {
   debugging: 'false',
   error_notification: 'true',
   delim: '@',
-  timezone: '(GMT-07:00) Pacific Daylight Time',
+  localzone: 'default',
+  trigger_min: '5',
 };

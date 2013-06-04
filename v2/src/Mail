@@ -15,7 +15,7 @@ function sendEmailToSelf(subject, body) {
   body += '<hr/>';
   body += '<table width="600" style="width:600px" cellspacing="0" cellpadding="0" align="center">';
   body += '<tr style="font-size:' + email_footer_text_size +'px;"> <a href="http://code.google.com/p/gmail-delay-send"> ' + SCRIPT_NAME + ' Homepage </a>';
-  body += '|| <a href="http://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendErrors"> Common Problems </a>';
+  body += '|| <a href="https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendErrors_8"> Common Problems </a>';
   body += '|| Script Version: ' + SCRIPT_VERSION + ' </tr>';
   body += '</table>';
   
