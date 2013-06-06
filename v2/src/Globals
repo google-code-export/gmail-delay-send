@@ -45,6 +45,9 @@ var SCRIPT_NAME = "GMail Delay Send";
 var TRIGGER_FUNCTION="main";
 var TRIGGER_MINUTE_TIMER=5;
 
+// Cache for user labels (https://code.google.com/p/gmail-delay-send/issues/detail?id=69)
+var USER_LABELS = null;
+
 /* NOTE these names must match the 'name' attribute in HTML */
 var DEFAULT_PREFS = {
   bcc: 'false',

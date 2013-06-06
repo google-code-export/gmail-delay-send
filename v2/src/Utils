@@ -176,9 +176,15 @@ function applyLabelToMessage(message, labelName) {
 
 /* Returns true/false if the user has the label created */
 function userHasLabel(label) {
-  var labels = executeCommand( function() { return GmailApp.getUserLabels(); } );
-  for(var i=0; i<labels.length; i++)
-    if(labels[i].getName() == label)
+  if(!USER_LABELS) {
+    debug('User label cache miss. Loading now');
+    USER_LABELS = executeCommand( function() { return GmailApp.getUserLabels(); } );
+  }
+  else
+    debug('User label cache hit.');
+  
+  for(var i=0; i<USER_LABELS.length; i++)
+    if(USER_LABELS[i].getName() == label)
       return true;
   return false;
 }
