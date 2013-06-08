@@ -89,11 +89,17 @@ function dateToStringWithoutTimezone(date) {
 }
 
 function parseDateToUserTimezoneString(str) {
+  // need to special case 'now'
+  if(/now/i.exec(str))
+    return dateToStringWithoutTimezone(getUserDate());
+  
   Date.setRelativeTo(getUserDate());
   
-  debug('Relative to:' + Date.relativeTo);
+  debug('Relative to:' + dateToStringWithoutTimezone(Date.relativeTo));
   
   var date = parseDate(str);
+  
+  debug('Date returned to user:' + dateToStringWithoutTimezone(date));
   
   // Format a date, but cut off timezone
   if(date)
