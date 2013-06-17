@@ -212,6 +212,16 @@
        </tr>
        
        <tr>
+        <td>BCC Suffix</td>
+        <td align="center">
+          <input type="text" name="bcc_suffix" id="bcc_suffix" size="13" ></input>
+        </td>
+        <td>
+          <a href="https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendOptions_8#Creating_a_bcc_filter" target="_blank">What does this do?</a>
+        </td>
+       </tr>
+       
+       <tr>
         <td>Trigger</td>
         <td align="center">
           <select id="trigger_min" name="trigger_min">
