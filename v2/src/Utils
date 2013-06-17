@@ -71,7 +71,7 @@ function getTextMessageDateAndNewBody(message) {
 }
 
 function doParsingWork(message, regex) {
-  var body = executeCommand(function(){return message.getBody();});  
+  var body = serviceGetMessageBody(message);
   var match = regex.exec(body);
   
   debug('Parsing date and body from email with regex:' + regex);
@@ -149,7 +149,7 @@ function getThreadsInLabel() {
   
   debug('Searching for emails with this string: "' + search_string + '"');
   
-  var threads = executeCommand( function() { return GmailApp.search(search_string); } );
+  var threads = serviceGmailSearch(search_string);
   
   return threads;
 }
@@ -161,7 +161,7 @@ function applyErrorLabel(message) {
 }
 
 function applyLabelToMessage(message, labelName) {
-  var label = executeCommand( function() { return GmailApp.createLabel(labelName); } );
+  var label = serviceCreateLabel(labelName);
   
   if(label == null) {
     debug('Was not able to create label: ' + labelName);
@@ -170,11 +170,11 @@ function applyLabelToMessage(message, labelName) {
   
   debug('Succesfully found label: ' + labelName);
   
-  var thread = executeCommand( function() { return message.getThread(); } );
+  var thread = serviceGetThreads(message);
   
-  executeCommand( function() { thread.addLabel(label); } );
+  serviceAddLabelToThread(thread, label);
     
-  debug('Successfully added label (' + labelName + ') to message with subject: ' + message.getSubject());
+  debug('Successfully added label (' + labelName + ') to message with subject: ' + serviceGetMessageSubject(message));
   
   return true;
 }
@@ -182,22 +182,16 @@ function applyLabelToMessage(message, labelName) {
 
 /* Returns true/false if the user has the label created */
 function userHasLabel(label) {
-  if(!USER_LABELS) {
-    debug('User label cache miss. Loading now');
-    USER_LABELS = executeCommand( function() { return GmailApp.getUserLabels(); } );
-  }
-  else
-    debug('User label cache hit.');
-  
-  for(var i=0; i<USER_LABELS.length; i++)
-    if(USER_LABELS[i].getName() == label)
+  labels = serviceGetUserLabels();
+  for(var i=0; i<labels.length; i++)
+    if(labels[i].getName() == label)
       return true;
   return false;
 }
 
 /* Creates label, true/false if label creation was successful */
 function createLabel(label) {
-  var label = executeCommand( function() { return GmailApp.createLabel(label); } );
+  var label = serviceCreateLabel(label);
   
   if(label) {
     debug('New label created successfully');
@@ -212,42 +206,8 @@ function createLabel(label) {
 
 // Opposed to a plain text email
 function isMessageHTML(message) {
-  var raw_message = executeCommand( function() { return message.getRawContent(); } );
+  var raw_message = serviceGetRawMessage(message);
   var is_html = raw_message.indexOf('Content-Type: text/html') > 0;
   debug('Is HTML email:' + is_html);
   return is_html;
-}
-
-function executeCommand(fp) {  
-  var msg;
-  var ret_val;
-  var last_error;
-  
-  if(EXECUTE_COMMAND_LOGGING)
-    debug(">>>>>>>>\n");
-  
-  for(var retries = NUM_RETRIES; retries > 0; retries -= 1) {
-    try {
-      ret_val = fp();
-      if(EXECUTE_COMMAND_LOGGING)
-        debug('Successfully executed command:' + fp);
-      break;
-    }
-    catch(err) {
-      last_error = err;
-      debug('Exception:' + err + ' thrown executing function:' + fp);
-      Utilities.sleep(SLEEP_TIME);
-    }
-  }
-  
-  if(EXECUTE_COMMAND_LOGGING)
-    debug('<<<<<<<<<\n');
-  
-  if(retries == 0) {
-    msg = 'Attempted to execute command:' + fp + ' ' + NUM_RETRIES + ' times without success. Error message: ' + last_error + '. Aborting  :-(';
-    Logger.log(msg);
-    throw(msg);
-  }
-  
-  return ret_val;
 }

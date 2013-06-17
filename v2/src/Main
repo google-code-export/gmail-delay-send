@@ -3,32 +3,19 @@
 **********************/
 
 function test() {
-  debug(getUserDate());
+  var message = GmailApp.getDraftMessages()[0];
+  message.__uid = 123;
+  debug('Message:' + message.__uid);
 }
   
 function testEmail() {
   var message = GmailApp.getDraftMessages()[0];
- 
-  var body = message.getBody();
-  
+  var body = message.getRawContent();
+  var attachments = message.getAttachments();
+  for(var i=0; i<attachments.length; i++)
+    debug('Attachment:' + i + ' name: ' + attachments[i].getName());
   debug(body);
-  
   return;
-  
-  var from_arr = message.getFrom().split(' <');
-  var name = from_arr[0];
-  var from = from_arr[1].replace('>','');
-  
-  debug('Message subject:' + message.getSubject());
-  debug('Message labels:');
-  var labels = message.getThread().getLabels();
-  
-  for(var i=0; i<labels.length; i++)
-    debug('  -' + labels[i].getName());
-  
-  GmailApp.sendEmail(message.getTo(), message.getSubject(), message.getBody(), {cc: message.getCc(), bcc: [message.getBcc(), from].join(','), htmlBody: message.getBody(), name: name, from: from, replyTo: message.getFrom()});
-  
-  message.moveToTrash();
 }
 
 
@@ -72,7 +59,7 @@ function ThreadMetaData()
 /* Return a completed ThreadMetaData object for this message */
 function parseMessage(message) {
   var prefs = getUserPrefs();
-  var messageDate = executeCommand(function(){return message.getDate();});
+  var messageDate = serviceGetMessageDate(message);
   var metaData = new ThreadMetaData();
     
   var message_date_and_new_body_arr = getMessageDateAndNewBody(message);
@@ -103,7 +90,7 @@ function parseMessage(message) {
     else {
       // Success parsing
       debug('Date to send: ' + dateToStringWithoutTimezone(metaData.sendDate)); 
-      metaData.originalBody = executeCommand(function(){return message.getBody();});;
+      metaData.originalBody = serviceGetMessageBody(message);
       metaData.successful_parse = true;
       metaData.newBody = message_new_body;
       metaData.error_msg = null;
@@ -179,7 +166,7 @@ function processThread(thread)
   var allMessagesSent = true;
   var prefs = getUserPrefs();
   var label = prefs.getToSendLabelName();
-  var messages = executeCommand(function(){return thread.getMessages();});
+  var messages = serviceGetThreadMessages(thread);
 
   for(var i=0; i<messages.length; i++) {
     if(!successfullyParsedAndSentMessage(messages[i]))
@@ -191,8 +178,7 @@ function processThread(thread)
   }
   else if(allMessagesSent) {
     debug('All messages sent for this thread.. Removing label');
-    var gmail_label_object = executeCommand(function(){return GmailApp.getUserLabelByName(label);})
-    executeCommand(function(){thread.removeLabel(gmail_label_object)});
+    serviceRemoveLabelFromThread(thread, label);
   }
 }
 

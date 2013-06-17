@@ -8,7 +8,7 @@ function sendEmailToSelf(subject, body) {
   if(body.length == 0)
      return;
 
-  var yourEmailAddress = executeCommand(function() { return Session.getEffectiveUser().getEmail(); } );
+  var yourEmailAddress = serviceGetEffectiveUserEmail();
   
   // Add footer to emails with helpful links
   body += '<br/>';
@@ -21,7 +21,7 @@ function sendEmailToSelf(subject, body) {
   
   options = {noReply: true, replyTo: SCRIPT_NAME, htmlBody: body};
   
-  executeCommand( function() { MailApp.sendEmail(yourEmailAddress, subject, body, options);} );
+  serviceSendEmail(yourEmailAddress, subject, body, options);
 }
 
 
@@ -30,16 +30,16 @@ function sendMessage(message, metaObj)
 {
   // Copies the given thread into another email
   // sends that mail, archive the old thread, and remove the label.
-  var from_arr = executeCommand(function() { return message.getFrom(); } ).split(' <');
+  var from_arr = serviceGetMessageFrom(message).split(' <');
   var name = from_arr[0];
   var from = from_arr[1].replace('>','');
   
   var body = metaObj.newBody;
-  var cc = executeCommand(function() { return message.getCc() });
-  var bcc = executeCommand(function() { return message.getBcc() });
-  var to = executeCommand(function() { return message.getTo()});
-  var subject = executeCommand(function() { return message.getSubject() });
-  var attach = executeCommand(function() { return message.getAttachments() });
+  var cc = serviceGetMessageCC(message);
+  var bcc = serviceGetMessageBCC(message);
+  var to = serviceGetMessageTo(message);
+  var subject = serviceGetMessageSubject(message);
+  var attach = serviceGetMessageAttachments(message);
  
   if(getUserPrefs().getBcc()) {
     var tmp_arr = from.split('@');
@@ -52,10 +52,7 @@ function sendMessage(message, metaObj)
   // To we want to include HTML body in email?
   var htmlBody = isMessageHTML(message) ? body : null;
   
-  executeCommand( 
-    function() {
-      GmailApp.sendEmail(to, subject, body, {htmlBody: htmlBody, cc: cc, bcc: bcc, from: from, attachments: attach, name: name} );
-    });
+  serviceSendEmailMessage(to, subject, body, htmlBody, cc, bcc, from, attach, name);
   
   var log = '<table border="1">';
   log += '<tr><th> Date Sent </th><th> To </th><th> CC </th><th> BCC </th><th> From </th><th> Subject </th><th> Body </th><th> Attachments </th></tr>';

@@ -121,7 +121,7 @@ function savePrefsFromForm(form_object) {
   for (var prop in form_object)
     debug(' - ' + prop + ' => ' + form_object[prop]);
   
-  executeCommand(function() { UserProperties.setProperties(form_object, true) });
+  serviceSaveProperty(form_object, true);
   
   var prefs = getUserPrefs(true);
   
@@ -142,7 +142,7 @@ function savePrefsFromForm(form_object) {
 }
 
 function loadPrefsForForm() {
-  prefs = executeCommand(function() { return UserProperties.getProperties(); });
+  prefs = serviceGetProperties();
   
   for(default_prop in DEFAULT_PREFS) {
     if(prefs[default_prop] == undefined) {
@@ -155,7 +155,7 @@ function loadPrefsForForm() {
 }
 
 function clearPreferences(form_object) {
-  executeCommand(function() { UserProperties.deleteAllProperties(); });
+  serviceClearProperties();
   
   //TODO Can I refresh page automatically?
   return 'Defaults restored. Please refresh page.';

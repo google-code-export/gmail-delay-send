@@ -13,7 +13,7 @@ function sendLogs() {
     sendEmailToSelf(SCRIPT_NAME + ' -> Parsing Errors', array_to_table(parse_errors));
 
   if(prefs.debuggingOn())
-    sendEmailToSelf(SCRIPT_NAME + ' -> Debug Logs', array_to_table( executeCommand( function() { return Logger.getLog()}).split('\n') ));
+    sendEmailToSelf(SCRIPT_NAME + ' -> Debug Logs', array_to_table(serviceGetLog.split('\n')));
 }
 
 function array_to_table(arr) {
