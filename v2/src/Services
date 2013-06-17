@@ -11,12 +11,15 @@ function cacheGet(key) {
   return SERVICE_CACHE[key];
 }
 
-function cachedExecute(key, fp) {
+function cachedExecute(fp, optional_key) {
+  var key = optional_key == undefined ? fp : optional_key;
+
   var answer = cacheGet(key);
   
   // We have already cached this answer
   if(answer != undefined) {
     //debug('Cache hit for key: ' + key);
+    debug('Service cache hit');
     return answer;
   }
   
@@ -25,11 +28,12 @@ function cachedExecute(key, fp) {
   // Put in cache for next time
   cachePut(key, answer);
   //debug('Cache miss for key: ' + key + ' but saved for next time.');
+  debug('Service cache miss');
   return answer;
 }
 
 function cachedExecuteMessage(message, fp) {
-  return cachedExecute(serviceGetMessageID(message) + fp, fp);
+  return cachedExecute(fp, serviceGetMessageID(message) + fp);
 }
 
 // -- MESSAGE SERVICES --
@@ -99,7 +103,7 @@ function serviceSendEmailMessage(to, subject, body, htmlBody, cc, bcc, from, att
 }
 
 function serviceGetUserLabels() {
-  return cachedExecute('serviceGetUserLabels', function() { return GmailApp.getUserLabels(); } );
+  return cachedExecute(function() { return GmailApp.getUserLabels(); } );
 }
 
 function serviceCreateLabel(label) {
@@ -146,7 +150,7 @@ function serviceGetLog() {
 
 // -- MISC SERVICES ==
 function serviceGetEffectiveUserEmail() {
-  return cachedExecute('serviceGetEffectiveUserEmail', function() { return Session.getEffectiveUser().getEmail() });
+  return cachedExecute(function() { return Session.getEffectiveUser().getEmail() });
 }
 
 function serviceSendEmail(yourEmailAddress, subject, body, options) {

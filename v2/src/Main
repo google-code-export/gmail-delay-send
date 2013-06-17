@@ -100,13 +100,16 @@ function parseMessage(message) {
 }
 
 
-function timeToSendMessage(messageSendDate) {
+function timeToSendMessage(messageSendDate) {  
+  var message_time = messageSendDate.getTime();
   var currentDate = getUserDate();
   
-  // compare returns -1 if sendDate less than current date (eg. it has already passed)
-  // compare returns 0 if the dates are equal
-  //var timeToSend = Date.compare(messageSendDate, currentDate) < 1;
-  var timeToSend = messageSendDate.getTime() <= currentDate.getTime();
+  // Add a 5 second fudge factor
+  var current_time = currentDate.getTime() + 5 * 1000;
+  
+  var timeToSend = message_time <= current_time;
+  
+  debug('Message date ms: ' + message_time + ' + Current time ms:' + current_time);
   
   debug('Detected time to send message: ' + timeToSend + '. Send Date: ' + dateToStringWithoutTimezone(messageSendDate) + ' Current user date:' + dateToStringWithoutTimezone(currentDate));
    
