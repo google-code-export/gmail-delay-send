@@ -245,26 +245,30 @@
       </tr>
     </table>
   </form>
+  
   <div id="dates_div" style="display:none">
     <table width="100%">
-      <th colspan="99" align="left"><h3>Test a date or time</h3></th>
+      <th colspan="99" align="left"><h3>Testing Resources</h3>
        <tr>
-        <td align="center">
-          <input type="text" name="date" value="<Enter Date>" id="date" onkeypress="submitOnEnter(event.which)"></input>
+        <td>
+          <input type="text" name="date" value="<Enter date/time>" id="date" onkeypress="submitOnEnter(event.which)"></input>
          </td>
-         <td align="center">
+         <td>
           <button type='button' onclick='getAndSubmitDate()'>Parse Date</button>
         </td>
         <td>
           <a href="https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendOptions_8#Test_a_date_or_time" target="_blank">What does this do?</a>
         </td>
       </tr>
-      <!-- <th colspan="99" align="left"><h3>Run now</h3></th>
       <tr>
-        <td align="center">
-          <button type='button' onclick='runOnce()'>Run</button>
+        <td>Run Gmail Delay Send now</td>
+        <td>
+          <button type='button' onclick='runOnce()'>Run Now</button>
         </td>
-      </tr> -->
+        <td>
+          <a href="https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendOptions_8#Force_a_run" target="_blank">What does this do?</a>
+        </td>
+      </tr>
     </table>
   </div>
 </body>
