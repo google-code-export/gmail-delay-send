@@ -40,17 +40,21 @@ function sendMessage(message, metaObj)
   var to = serviceGetMessageTo(message);
   var subject = serviceGetMessageSubject(message);
   var attach = serviceGetMessageAttachments(message);
- 
-  if(getUserPrefs().getBcc()) {
-    var tmp_arr = from.split('@');
-    tmp_arr.splice(1, 0, getUserPrefs().getBccSuffix(), '@');
-    var from_bcc = tmp_arr.join('');
-    debug('User wants self bcc: ' + from_bcc);
-    bcc = [bcc, from_bcc].join(',');
-  }
     
   // To we want to include HTML body in email?
   var htmlBody = isMessageHTML(message) ? body : null;
+  
+  debug('== Sending mail ==');
+  debug('  To: ' + to);
+  debug('  Subject: ' + subject);
+  debug('  Body length: ' + body.length);
+  debug('  HTML body length: ' + (htmlBody == null ? 'Empty' : htmlBody.length));
+  debug('  CC: ' + cc);
+  debug('  BCC: ' + bcc);
+  debug('  From: ' + from);
+  debug('  Attachments length: ' + attach.length);
+  debug('  Name: ' + name);
+  debug('==================');
   
   serviceSendEmailMessage(to, subject, body, htmlBody, cc, bcc, from, attach, name);
   
@@ -74,8 +78,6 @@ function sendMessage(message, metaObj)
   log += '</td>';
             
   log += '</tr></table>';
-  
-  debug(log);
   
   receipts.push(log);
   

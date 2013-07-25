@@ -2,23 +2,6 @@
  Main Code
 **********************/
 
-function test() {
-  var message = GmailApp.getDraftMessages()[0];
-  message.__uid = 123;
-  debug('Message:' + message.__uid);
-}
-  
-function testEmail() {
-  var message = GmailApp.getDraftMessages()[0];
-  var body = message.getRawContent();
-  var attachments = message.getAttachments();
-  for(var i=0; i<attachments.length; i++)
-    debug('Attachment:' + i + ' name: ' + attachments[i].getName());
-  debug(body);
-  return;
-}
-
-
 // Function called on event timer
 function main() {
   debug('Starting main()');

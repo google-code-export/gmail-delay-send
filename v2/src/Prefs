@@ -56,16 +56,8 @@ function Prefs()
     return this.delim;
   }
   
-  this.getBcc = function() {
-    return this.bcc;
-  }
-  
   this.getTimeZone = function() {
     return this.localzone;
-  }
-  
-  this.getBccSuffix = function() {
-    return this.bcc_suffix;
   }
   
   this.getTriggerMin = function() {
@@ -101,8 +93,6 @@ function Prefs()
     debug('  Sent Label Name: ' + this.getSentLabelName());
     debug('  To Send Label Name: ' + this.getToSendLabelName());
     debug('  Trigger Minutes: ' + this.getTriggerMin());
-    debug('  Bcc: ' + this.getBcc());
-    debug('  Bcc Suffix: ' + this.getBccSuffix());
     debug('  Delim: ' + this.getDelim());
     debug('  TimeZone: ' + this.getTimeZone());
     debug('  getHTMLRegex: ' + this.getHTMLRegex());

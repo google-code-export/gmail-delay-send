@@ -176,17 +176,6 @@
           <a href="https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendOptions_8#Email_me_debug_logs" target="_blank">What does this do?</a>
         </td>
       </tr>
-      
-      <tr>
-        <td>Bcc me</td>
-        <td align="center">
-          <input type="radio" name="bcc" id="bcc_true" value=true>On</input>
-          <input type="radio" name="bcc" id="bcc_false" value=false>Off</input>
-        </td>
-        <td>
-          <a href="https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendOptions_8#BCC_me" target="_blank">What does this do?</a>
-        </td>
-      </tr>
        
       <th colspan="99" align="left"><h3>Advanced Settings</h3></th>
       
@@ -208,16 +197,6 @@
         </td>
         <td>
           <a href="https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendOptions_8#Parsing_Delimiter" target="_blank">What does this do?</a>
-        </td>
-       </tr>
-       
-       <tr>
-        <td>BCC Suffix</td>
-        <td align="center">
-          <input type="text" name="bcc_suffix" id="bcc_suffix" size="13" ></input>
-        </td>
-        <td>
-          <a href="https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendOptions_8#Creating_a_bcc_filter" target="_blank">What does this do?</a>
         </td>
        </tr>
        
