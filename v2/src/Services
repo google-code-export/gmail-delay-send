@@ -41,6 +41,10 @@ function serviceGetMessageID(message) {
   return executeCommand(function(){return message.getId();});
 }
 
+function serviceGetMessageIsDraft(message) {
+  return cachedExecuteMessage(message, function(){return message.isDraft();});
+}
+
 function serviceGetMessageBody(message) {
   return cachedExecuteMessage(message, function(){return message.getBody();});
 }

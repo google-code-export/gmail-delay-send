@@ -133,7 +133,9 @@ function createLabels() {
 
 /* Returns all the threads objects that are in the label and in the draft folder */
 function getThreadsInLabel() {
-  var search_string = 'in:drafts ';
+  // Replies to existing messages are considered to be in the in:inbox (even though they
+  // still show up in:drafts?)
+  var search_string = '(in:drafts OR in:inbox) ';
   var prefs = getUserPrefs();
   
   var label_name = prefs.getToSendLabelName();

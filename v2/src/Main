@@ -3,16 +3,14 @@
 **********************/
 
 function test() {
-var my_email = '<blairkutz@gmail.com>';
-var other_email = '<blair.kutzman@gmail.com>';
-
-var my_name = 'A ';
-var other_name = 'B ';
-
-var body = 'test3';
-var subject = (new Date()).toString();
-
-GmailApp.sendEmail(other_name + other_email, subject, body, {bcc: my_name + my_email});
+//var message = GmailApp.getDraftMessages()[0];
+var threads = serviceGmailSearch('(in:drafts OR in:inbox) + label:gmaildelaysend-tosend');
+debug('Number of threads:' + threads.length);
+var messages = threads[0].getMessages();
+debug('Number of messages:'+messages.length);
+for(var i=0; i<messages.length; i++) {
+  debug('Message ' + i + ' is draft: ' + messages[i].isDraft());
+  }
 }
 
 // Function called on event timer
@@ -168,11 +166,15 @@ function processThread(thread)
   var messages = serviceGetThreadMessages(thread);
 
   for(var i=0; i<messages.length; i++) {
+    // Not every message in the thread needs to be parsed.
+    // One the ones that are in the draft folders.
+    if(!serviceGetMessageIsDraft(messages[i]))
+      continue;
     if(!successfullyParsedAndSentMessage(messages[i]))
       allMessagesSent = false;
   }
   
-  if(prefs.getRequireLabel()) {
+  if(!prefs.getRequireLabel()) {
     debug('Because we are not using a label, skipping the removal process');
   }
   else if(allMessagesSent) {
