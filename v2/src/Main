@@ -2,6 +2,19 @@
  Main Code
 **********************/
 
+function test() {
+var my_email = '<blairkutz@gmail.com>';
+var other_email = '<blair.kutzman@gmail.com>';
+
+var my_name = 'A ';
+var other_name = 'B ';
+
+var body = 'test3';
+var subject = (new Date()).toString();
+
+GmailApp.sendEmail(other_name + other_email, subject, body, {bcc: my_name + my_email});
+}
+
 // Function called on event timer
 function main() {
   debug('Starting main()');

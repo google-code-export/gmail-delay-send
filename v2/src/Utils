@@ -60,7 +60,7 @@ function getTextMessageDateAndNewBody(message) {
   if(match && match.length > 2)
   {
     date_string = match[1];
-    new_body = match[2].split(TEXT_LINE_BREAKS).join('\n');
+    new_body = match[2].split(TEXT_LINE_BREAKS).join('');
   }
 
   debug('Returning date_string: ' + date_string);
