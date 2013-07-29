@@ -34,7 +34,7 @@ function sendMessage(message, metaObj)
   var name = from_arr[0];
   var from = from_arr[1].replace('>','');
   
-  var body = metaObj.newBody;
+  var body = escapeHTMLChars(metaObj.newBody);
   var cc = serviceGetMessageCC(message);
   var bcc = serviceGetMessageBCC(message);
   var to = serviceGetMessageTo(message);

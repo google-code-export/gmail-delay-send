@@ -209,3 +209,17 @@ function isMessageHTML(message) {
   debug('Is HTML email:' + is_html);
   return is_html;
 }
+
+// Escape the most common HTML chars
+// GmailMessages only have a 'getBody()' which gets the message as HTML
+// So stuff like '<' is esacped to '&lt;'. Need to turn this back into
+// pure text.
+// Full enumeration of all the chars if needed at: http://stackoverflow.com/questions/784586/convert-special-characters-to-html-in-javascript
+function escapeHTMLChars(str) {
+  str = str.replace(/&amp;/g, '&');
+  str = str.replace(/&gt;/g, '>');
+  str = str.replace(/&lt;/g, '<');
+  str = str.replace(/&quot;/g, '"');
+  str = str.replace(/&#039;/g, "'");
+  return str;
+}
