@@ -2,17 +2,6 @@
  Main Code
 **********************/
 
-function test() {
-//var message = GmailApp.getDraftMessages()[0];
-var threads = serviceGmailSearch('(in:drafts OR in:inbox) + label:gmaildelaysend-tosend');
-debug('Number of threads:' + threads.length);
-var messages = threads[0].getMessages();
-debug('Number of messages:'+messages.length);
-for(var i=0; i<messages.length; i++) {
-  debug('Message ' + i + ' is draft: ' + messages[i].isDraft());
-  }
-}
-
 // Function called on event timer
 function main() {
   debug('Starting main()');
