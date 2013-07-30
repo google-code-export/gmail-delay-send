@@ -59,17 +59,17 @@ function sendMessage(message, metaObj)
   serviceSendEmailMessage(to, subject, body, htmlBody, cc, bcc, from, attach, name);
   
   var log = '<table border="1">';
-  log += '<tr><th> Date Sent </th><th> To </th><th> CC </th><th> BCC </th><th> From </th><th> Subject </th><th> Body </th><th> Attachments </th></tr>';
+  log += '<tr><th> Date Sent </th><th> To </th><th> CC </th><th> BCC </th><th> From </th><th> Subject </th><th> Body Snippit (first 500 chars) </th><th> Attachments </th></tr>';
   log += '<tr>';
-  log += '<td>' + new Date() + '</td>';
-  log += '<td>' + to + '</td>';
-  log += '<td>' + cc + '</td>';
-  log += '<td>' + bcc + '</td>';
-  log += '<td>' + from + '</td>';
-  log += '<td>' + subject + '</td>';
-  log += '<td>' + body + '</td>';
+  log += '<td style="vertical-align:text-top">' + new Date() + '</td>';
+  log += '<td style="vertical-align:text-top">' + to + '</td>';
+  log += '<td style="vertical-align:text-top">' + cc + '</td>';
+  log += '<td style="vertical-align:text-top">' + bcc + '</td>';
+  log += '<td style="vertical-align:text-top">' + from + '</td>';
+  log += '<td style="vertical-align:text-top">' + subject + '</td>';
+  log += '<td style="vertical-align:text-top">' + body.substring(0,500) + '</td>';
    
-  log += '<td>';
+  log += '<td style="vertical-align:text-top">';
   
   // Objects are in the form of blobs
   for(var i=0; i<attach.length; i++)

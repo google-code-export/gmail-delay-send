@@ -87,7 +87,14 @@ function doParsingWork(message, regex) {
   var match = regex.exec(body);
   
   debug('Parsing date and body from email with regex:' + regex);
-  debug(' Matches:' + match);
+  
+  if(match != null) {
+    for(var i=0; i<match.length; i++)
+      debug('Match[' + i + '] substring:' + match[i].substring(0,100));
+  }
+  else {
+    debug('Empty Matches');
+  }
   
   return match;
 }
