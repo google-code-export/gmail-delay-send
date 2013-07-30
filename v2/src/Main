@@ -1,7 +1,6 @@
 /**********************
  Main Code
 **********************/
-
 // Function called on event timer
 function main() {
   debug('Starting main()');
@@ -123,7 +122,7 @@ function handleMalformedMessage(message, metaObj) {
                       'A new label was applied to this message:' + 
                       '<a href="https://mail.google.com/mail/?#label/' + prefs.getErrorLabelName() + '">' + prefs.getErrorLabelName() + '</a>. <br/>' +
                       'Gmail Delay Send will ignore this message until you fix the problem and remove that label. <br/>' +
-                      'If you have any questions please see the page on <a href="http://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendErrors">common problems</a>');
+                      'If you have any questions please see the page on <a href="https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendErrors_8">common problems</a>');
     
     else
       parse_errors.push('There was a problem with a message and we tried to apply the error label, but that was un-successful also. It is not a good day  :-(');

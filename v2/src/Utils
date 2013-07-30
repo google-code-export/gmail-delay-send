@@ -26,12 +26,12 @@ function getMessageDateAndNewBody(message) {
 }
 
 function getHTMLMessageDateAndNewBody(message) {
-  var match = doParsingWork(message, getUserPrefs().getHTMLRegex());
   var date_string = null;
   var new_body = null;
   
-  if(match && match.length > 3)
-  {
+  var match = doParsingWork(message, getUserPrefs().getHTMLRegex());
+  
+  if(match && match.length > 3) {
     // We found a match, but not sure that delim is in the date_string
     var possible_datestring = match[2];
     debug('Found possible datestring: ' + possible_datestring);
@@ -46,13 +46,24 @@ function getHTMLMessageDateAndNewBody(message) {
     else
       debug('Could not find delim in possible datestring');
   }
+  
+  // When using the default text size in the old compose window there are no leading
+  // HTML tags before the first character in the email. In this case the text regex will also
+  // work. Try that..
+  if(date_string == null && new_body == null) {
+    debug('HTML Parsing failed, Attempting text parsing.');
+    arr = getTextMessageDateAndNewBody(message, true);
+    date_string = arr[0];
+    new_body = arr[1];
+    debug('Text parsing result for date_string:' + date_string);
+  }
 
   debug('Returning date_string: ' + date_string);
 
   return [date_string, new_body];
 }
 
-function getTextMessageDateAndNewBody(message) {
+function getTextMessageDateAndNewBody(message, skip_split) {
   var match = doParsingWork(message, getUserPrefs().getTextRegex());
   var date_string = null;
   var new_body = null;
@@ -60,7 +71,10 @@ function getTextMessageDateAndNewBody(message) {
   if(match && match.length > 2)
   {
     date_string = match[1];
-    new_body = match[2].split(TEXT_LINE_BREAKS).join('');
+    if(skip_split)
+      new_body = match[2];
+    else
+      new_body = match[2].split(TEXT_LINE_BREAKS).join('');
   }
 
   debug('Returning date_string: ' + date_string);
