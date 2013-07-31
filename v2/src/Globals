@@ -9,9 +9,6 @@ var TOP_LEVEL_LABEL = 'GmailDelaySend';
 // Malformed messages will be placed in this label
 var DELAY_SEND_ERROR_LABEL = 'Errors';
 
-// Sent messages will be placed under this label
-var DELAY_SEND_SENT_LABEL = 'Sent';
-
 // Messages to send will be placed under this label
 var DELAY_SEND_TO_SEND_LABEL = 'ToSend';
 

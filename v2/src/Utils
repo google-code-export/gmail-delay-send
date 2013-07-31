@@ -135,7 +135,6 @@ function createLabels() {
   labels_to_create = [getUserPrefs().getTopLabelName(),
                       getUserPrefs().getToSendLabelName(),
                       getUserPrefs().getErrorLabelName(),
-                      getUserPrefs().getSentLabelName(),
                       ];
   
   for(var i=0; i<labels_to_create.length; i++) {    

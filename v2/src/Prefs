@@ -44,10 +44,6 @@ function Prefs()
     return TOP_LEVEL_LABEL + '/' + DELAY_SEND_ERROR_LABEL;
   }
 
-  this.getSentLabelName = function() {
-    return TOP_LEVEL_LABEL + '/' + DELAY_SEND_SENT_LABEL;
-  }
-  
   this.getToSendLabelName = function() {
     return TOP_LEVEL_LABEL + '/' + DELAY_SEND_TO_SEND_LABEL;
   }
@@ -90,7 +86,6 @@ function Prefs()
     debug('  Top level Name: ' + this.getTopLabelName());
     debug('  Label Required: ' + this.getRequireLabel());
     debug('  Error Label Name: ' + this.getErrorLabelName());
-    debug('  Sent Label Name: ' + this.getSentLabelName());
     debug('  To Send Label Name: ' + this.getToSendLabelName());
     debug('  Trigger Minutes: ' + this.getTriggerMin());
     debug('  Delim: ' + this.getDelim());
