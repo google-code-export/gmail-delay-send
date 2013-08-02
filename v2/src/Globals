@@ -21,10 +21,11 @@ var receipts = [];
 // Global preferences object
 var USER_PREFS = null;
 
-// What suffix is added to bcc messages
-var BCC_SUFFIX = '+gmaildelaysend';
+// Sent to user if not empty and 'Error Notifictions' is turned on.
+var error_msgs = [];
 
-var parse_errors = [];
+// Parsing errors are always sent
+var parsing_errors = [];
 
 var EXECUTE_COMMAND_LOGGING = false;
 
@@ -49,9 +50,8 @@ var DEFAULT_PREFS = {
   email_receipts: 'true',
   triggers: 'false',
   debugging: 'false',
-  error_notification: 'true',
+  error_notification: 'false',
   delim: '@',
-  bcc_suffix: '+gmaildelaysend',
   localzone: 'default',
   trigger_min: '5',
 };

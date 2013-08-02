@@ -9,19 +9,26 @@ function main() {
   var prefs = getUserPrefs();
   prefs.printPrefs();
   
-  // Try to create the labels that we need, if failure then return.
-  if(!createLabels())
-    return 'Error creating labels!';
+  // User has to have 'Error Notifications' turned on to get notified of top level exceptions.
+  try {
   
-  // Found the label, lets see if anything is in it
-  var threads = getThreadsInLabel();
-  
-  if(threads.length > 0) {
-    debug('Found ' + threads.length + ' threads to process');
-    processThreads(threads);
+    // Try to create the labels that we need, if failure then return.
+    if(!createLabels())
+      return 'Error creating labels!';
+    
+    // Found the label, lets see if anything is in it
+    var threads = getThreadsInLabel();
+    
+    if(threads.length > 0) {
+      debug('Found ' + threads.length + ' threads to process');
+      processThreads(threads);
+    }
+    else
+      debug('No threads found to process.. exiting');
   }
-  else
-    debug('No threads found to process.. exiting');
+  catch(err) {
+    error_msgs.push(err);
+  }
   
   sendLogs();
   
@@ -117,15 +124,15 @@ function handleMalformedMessage(message, metaObj) {
 
   if(process_message_as_error) {
     if(applyErrorLabel(message))
-      parse_errors.push('Sorry! There was an error parsing your message with subject: "' + message.getSubject() + '". <br/> ' +
-                      'The reason for this error was: "' + metaObj.error_msg + '". <br/>' +
-                      'A new label was applied to this message:' + 
-                      '<a href="https://mail.google.com/mail/?#label/' + prefs.getErrorLabelName() + '">' + prefs.getErrorLabelName() + '</a>. <br/>' +
-                      'Gmail Delay Send will ignore this message until you fix the problem and remove that label. <br/>' +
-                      'If you have any questions please see the page on <a href="https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendErrors_8">common problems</a>');
+      parsing_errors.push('Sorry! There was an error parsing your message with subject: "' + message.getSubject() + '". <br/> ' +
+                          'The reason for this error was: "' + metaObj.error_msg + '". <br/>' +
+                          'A new label was applied to this message:' + 
+                          '<a href="https://mail.google.com/mail/?#label/' + prefs.getErrorLabelName() + '">' + prefs.getErrorLabelName() + '</a>. <br/>' +
+                          'Gmail Delay Send will ignore this message until you fix the problem and remove that label. <br/>' +
+                          'If you have any questions please see the page on <a href="https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendErrors_8">common problems</a>');
     
     else
-      parse_errors.push('There was a problem with a message and we tried to apply the error label, but that was un-successful also. It is not a good day  :-(');
+      parsing_errors.push('There was a problem with a message and we tried to apply the error label, but that was un-successful also. It is not a good day  :-(');
   }
 }
 

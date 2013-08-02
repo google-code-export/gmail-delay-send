@@ -196,12 +196,12 @@ function executeCommand(fp) {
     debug('<<<<<<<<<\n');
   
   if(retries == 0) {
-    //msg = 'Attempted to execute command:' + fp + ' ' + NUM_RETRIES + ' times without success. Error message: ' + last_error + '. Aborting  :-(';
     msg = 'Gmail Delay Send failed to connect to one of the Google Services. ';
     msg += 'This is OK if it happens infrequently,  the script will run again in a few minutes. ';
-    msg += 'Service could not be connected to: ' + fp + ' ';
+    msg += 'See here to avoid receiving these notifications: https://code.google.com/p/gmail-delay-send/wiki/GmailDelaySendOptions_8#Error_Notifications. ';
+    msg += 'Function being called: ' + fp + '.';
     msg += 'Error message: ' + last_error;
-    Logger.log(msg);
+    debug(msg);
     throw(msg);
   }
   

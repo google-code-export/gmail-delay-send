@@ -6,11 +6,13 @@
 function sendLogs() {
   var prefs = getUserPrefs();
   
+  sendEmailToSelf(SCRIPT_NAME + ' -> Parsing Errors', array_to_table(parsing_errors));
+  
   if(prefs.receiptsOn())
     sendEmailToSelf(SCRIPT_NAME + ' -> Receipts ', array_to_table(receipts));
 
   if(prefs.emailNotificationsOn())
-    sendEmailToSelf(SCRIPT_NAME + ' -> Parsing Errors', array_to_table(parse_errors));
+    sendEmailToSelf(SCRIPT_NAME + ' -> Errors', array_to_table(error_msgs));
 
   if(prefs.debuggingOn())
     sendEmailToSelf(SCRIPT_NAME + ' -> Debug Logs', array_to_table(serviceGetLog().split('\n')));
