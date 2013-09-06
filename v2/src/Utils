@@ -136,7 +136,7 @@ function createLabels() {
                       getUserPrefs().getToSendLabelName(),
                       getUserPrefs().getErrorLabelName(),
                       ];
-                      
+
   for(var i=0; i<labels_to_create.length; i++) {    
     var user_label = labels_to_create[i];    
     if(user_label && !userHasLabel(user_label)) {

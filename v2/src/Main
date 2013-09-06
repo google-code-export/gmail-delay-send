@@ -27,7 +27,10 @@ function main() {
       debug('No threads found to process.. exiting');
   }
   catch(err) {
-    error_msgs.push(err);
+    if (err.hasOwnProperty('stack'))
+      error_msgs.push('-- Error:' + err + ' --Stack:' + err.stack);
+    else
+      error_msgs.push(err);
   }
   
   sendLogs();

@@ -202,7 +202,7 @@ function executeCommand(fp) {
     msg += 'Function being called: ' + fp + '.';
     msg += 'Error message: ' + last_error;
     debug(msg);
-    throw(msg);
+    throw new Error(msg);
   }
   
   return ret_val;
