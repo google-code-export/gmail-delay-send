@@ -31,9 +31,16 @@ function sendMessage(message, metaObj)
   // Copies the given thread into another email
   // sends that mail, archive the old thread, and remove the label.
   var from_arr = serviceGetMessageFrom(message).split(' <');
-  var name = from_arr[0];
-  var from = from_arr[1].replace('>','');
   
+  if (from_arr.length > 1) {
+    var name = from_arr[0];
+    var from = from_arr[1].replace('>','');
+  }
+  else {
+    var name = '';
+    var from = from_arr[0];
+  }
+   
   var body = escapeHTMLChars(metaObj.newBody);
   var cc = serviceGetMessageCC(message);
   var bcc = serviceGetMessageBCC(message);
