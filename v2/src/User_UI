@@ -14,6 +14,19 @@
       return google.script.run.withSuccessHandler(showAlert).withFailureHandler(showError);
     }
     
+    function validate() {
+      debug('Starting validation check.');     
+      // Check that delim doesn't contain javascript regexs
+      var delim = document.getElementById('delim').value;
+      debug('Delim contents: ' + delim);
+      if (/\||\^|\$|\?|\+|\*|\[|\]|\{|\}|\\/.exec(delim)) {
+        debug('Delim failed regex check');
+        showAlert('The delimeter you entered contains invalid characters. It cannot contain: | ^ $ ? + * [ ] { } \\');
+        return false;
+      }
+      return true;
+    }
+    
     function getHandlersAndHidePrefs() {
       showLoadingMessage(true);
       return getHandlers();
@@ -216,7 +229,7 @@
        
       <tr>
         <td align="center">
-          <button type='button' onclick='getHandlersAndHidePrefs().savePrefs(document.getElementById("prefs_form"))'>Save Preferences</button>
+          <button type='button' onclick='if (validate()) getHandlersAndHidePrefs().savePrefs(document.getElementById("prefs_form"))'>Save Preferences</button>
         </td>
         <td align="center">
           <button type='button' onclick='getHandlersAndHidePrefs().restoreDefaultPrefs(document.getElementById("prefs_form"))'>Restore Defaults</button>

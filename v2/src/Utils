@@ -29,11 +29,11 @@ function getHTMLMessageDateAndNewBody(message) {
   var date_string = null;
   var new_body = null;
   
-  var match = doParsingWork(message, getUserPrefs().getHTMLRegex());
+  var match = doParsingWork(serviceGetMessageBody(message), getUserPrefs().getHTMLRegex());
   
   if(match && match.length > 3) {
     // We found a match, but not sure that delim is in the date_string
-    var possible_datestring = match[2];
+    var possible_datestring = escapeHTMLChars(match[2]);
     debug('Found possible datestring: ' + possible_datestring);
     
     // Check if out delim is in the string
@@ -64,7 +64,9 @@ function getHTMLMessageDateAndNewBody(message) {
 }
 
 function getTextMessageDateAndNewBody(message, skip_split) {
-  var match = doParsingWork(message, getUserPrefs().getTextRegex());
+  // When looking for a text email match we want to escape any HTML chars so that our regex
+  // can match.
+  var match = doParsingWork(escapeHTMLChars(serviceGetMessageBody(message)), getUserPrefs().getTextRegex());
   var date_string = null;
   var new_body = null;
   
@@ -82,8 +84,7 @@ function getTextMessageDateAndNewBody(message, skip_split) {
   return [date_string, new_body];
 }
 
-function doParsingWork(message, regex) {
-  var body = serviceGetMessageBody(message);
+function doParsingWork(body, regex) {
   var match = regex.exec(body);
   
   debug('Parsing date and body from email with regex:' + regex);
