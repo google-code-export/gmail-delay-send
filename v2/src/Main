@@ -51,7 +51,7 @@ function ThreadMetaData()
 /* Return a completed ThreadMetaData object for this message */
 function parseMessage(message) {
   var prefs = getUserPrefs();
-  var messageDate = serviceGetMessageDate(message);
+  var message_date_user_timezone = convertToUserDate(serviceGetMessageDate(message));
   var metaData = new ThreadMetaData();
     
   var message_date_and_new_body_arr = getMessageDateAndNewBody(message);
@@ -67,9 +67,9 @@ function parseMessage(message) {
     // We successfully found the delimeter
     metaData.found_delim = true;
 
-    debug('Date String: ' + date_line + ' Relative to date message was composed: ' + messageDate);
+    debug('Date String: ' + date_line + ' Timestamp on message: ' + dateToStringWithoutTimezone(message_date_user_timezone));
     
-    Date.setRelativeTo(messageDate);
+    Date.setRelativeTo(message_date_user_timezone);
     
     metaData.sendDate = parseDate(date_line);
  
@@ -81,7 +81,7 @@ function parseMessage(message) {
     }
     else {
       // Success parsing
-      debug('Date to send: ' + dateToStringWithoutTimezone(metaData.sendDate)); 
+      debug('Date to send: ' + dateToStringWithoutTimezone(metaData.sendDate));
       metaData.originalBody = serviceGetMessageBody(message);
       metaData.successful_parse = true;
       metaData.newBody = message_new_body;
@@ -92,18 +92,21 @@ function parseMessage(message) {
 }
 
 
-function timeToSendMessage(messageSendDate) {  
+function timeToSendMessage(messageSendDate) {
+  // Message time is in user timezone
   var message_time = messageSendDate.getTime();
-  var currentDate = getUserDate();
+
+  // User date is in their timezone
+  var user_time = getUserDate();
   
   // Add a 5 second fudge factor
-  var current_time = currentDate.getTime() + 5 * 1000;
+  var send_time = user_time.getTime() + 5 * 1000;
   
-  var timeToSend = message_time <= current_time;
+  var timeToSend = message_time <= send_time;
   
-  debug('Message date ms: ' + message_time + ' + Current time ms:' + current_time);
+  debug('Message date ms: ' + message_time + ' + Current time ms:' + send_time);
   
-  debug('Detected time to send message: ' + timeToSend + '. Send Date: ' + dateToStringWithoutTimezone(messageSendDate) + ' Current user date:' + dateToStringWithoutTimezone(currentDate));
+  debug('Detected time to send message: ' + timeToSend + '. Send Date: ' + dateToStringWithoutTimezone(messageSendDate) + ' Current user date:' + dateToStringWithoutTimezone(user_time));
    
   return timeToSend;
 }

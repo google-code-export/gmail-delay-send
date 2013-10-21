@@ -68,7 +68,8 @@ function sendMessage(message, metaObj)
   var log = '<table border="1">';
   log += '<tr><th> Date Sent </th><th> To </th><th> CC </th><th> BCC </th><th> From </th><th> Subject </th><th> Body Snippit (first 500 chars) </th><th> Attachments </th></tr>';
   log += '<tr>';
-  log += '<td style="vertical-align:text-top">' + new Date() + '</td>';
+  log += '<td style="vertical-align:text-top">' + dateToStringWithoutTimezone(getUserDate())
+  + '</td>';
   log += '<td style="vertical-align:text-top">' + to + '</td>';
   log += '<td style="vertical-align:text-top">' + cc + '</td>';
   log += '<td style="vertical-align:text-top">' + bcc + '</td>';

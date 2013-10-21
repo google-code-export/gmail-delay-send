@@ -14,11 +14,16 @@ function getTimeZoneString() {
   return timezone_string;  
 }
 
-function getUserDate() {
+function convertToUserDate(date) {
   var user_timezone_string = getTimeZoneString();
-  var user_date_string = Utilities.formatDate(new Date(), user_timezone_string, "yyyy/MM/dd HH:mm:ss");
-  debug('User date string:' + user_date_string);
-  return new Date(user_date_string);
+  var user_date_string = Utilities.formatDate(date, user_timezone_string, "yyyy/MM/dd HH:mm:ss");
+  var user_date = new Date(user_date_string);
+  debug('Converted:' + date + ' to user time:' + user_date);
+  return user_date;
+}
+
+function getUserDate() {
+  return convertToUserDate(new Date());
 }
 
 function getMessageDateAndNewBody(message) {
