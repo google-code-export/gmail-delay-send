@@ -45,6 +45,10 @@ function serviceGetMessageIsDraft(message) {
   return cachedExecuteMessage(message, function(){return message.isDraft();});
 }
 
+function serviceGetMessageIsTrash(message) {
+  return cachedExecuteMessage(message, function(){return message.isInTrash();});
+}
+
 function serviceGetMessageBody(message) {
   return cachedExecuteMessage(message, function(){return message.getBody();});
 }

@@ -142,44 +142,60 @@ function handleMalformedMessage(message, metaObj) {
   }
 }
 
-function successfullyParsedAndSentMessage(message) {
-  var successfullyParsedAndSent = false;
-  
+
+function tryParseMessage(message) {
   var metaObj = parseMessage(message);
   
   if(!metaObj.found_delim || !metaObj.successful_parse) {
     debug('The message was malformed in some way. Found delimeter:' + metaObj.found_delim + '. Successful date parse: ' + metaObj.successful_parse);
     handleMalformedMessage(message, metaObj);
+    return null;
   }
-  // If it is time to send the message, attempt to do so
-  else if(timeToSendMessage(metaObj.sendDate) && sendMessage(message, metaObj))
-    successfullyParsedAndSent = true;
+  else  
+    return metaObj;
+}
   
-  return successfullyParsedAndSent;
+
+function tryToSendMessage(metaObj, message) {
+  if(!timeToSendMessage(metaObj.sendDate) || !sendMessage(message, metaObj))
+    return false;
+  return true;
 }
 
 /* Check and send an individual thread if it's time */
 function processThread(thread)
 {
-  var allMessagesSent = true;
+  var removeLabel = true;
   var prefs = getUserPrefs();
   var label = prefs.getToSendLabelName();
   var messages = serviceGetThreadMessages(thread);
 
   for(var i=0; i<messages.length; i++) {
-    // Not every message in the thread needs to be parsed.
-    // One the ones that are in the draft folders.
-    if(!serviceGetMessageIsDraft(messages[i]))
+    var message = messages[i];
+
+    if(!serviceGetMessageIsDraft(message))
       continue;
-    if(!successfullyParsedAndSentMessage(messages[i]))
-      allMessagesSent = false;
+    
+    if(serviceGetMessageIsTrash(message))
+      continue;
+      
+    var metaObj = tryParseMessage(message);
+    
+    // Message was malformed
+    if(metaObj == null)
+      continue;
+    
+    if(!tryToSendMessage(metaObj, message)) {
+      debug('Message was parsed successfully, but no email was sent. Do not remove label.');
+      removeLabel = false;
+    }
   }
   
   if(!prefs.getRequireLabel()) {
     debug('Because we are not using a label, skipping the removal process');
   }
-  else if(allMessagesSent) {
-    debug('All messages sent for this thread.. Removing label');
+  else if(removeLabel) {
+    debug('Removing label');
     serviceRemoveLabelFromThread(thread, label);
   }
 }

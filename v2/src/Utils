@@ -157,19 +157,26 @@ function createLabels() {
   return true;
 }
 
-/* Returns all the threads objects that are in the label and in the draft folder */
+/* Returns all the threads objects that are in the label and in the draft folder 
+
+NOTE: Seems to be a bug in Gmail when a message which has a label applied doesn't show up 
+when searching for both the label and in:drafts. Until this is resolved, search only for things
+in:drafts or have label, but not both.
+*/
 function getThreadsInLabel() {
-  var search_string = 'in:drafts ';
+  var search_string = '';
   var prefs = getUserPrefs();
   
   var label_name = prefs.getToSendLabelName();
   var error_label = prefs.getErrorLabelName();
   
   if(prefs.getRequireLabel())
-    search_string += ' + in:' + label_name;
+    search_string = ' label:' + label_name + ' ';
+  else
+    search_string = ' in:drafts ';
   
   // do not include any message in the error bucket
-  search_string += ' + -label:' + error_label + ' ';
+  search_string += ' -label:' + error_label + ' ';
   
   debug('Searching for emails with this string: "' + search_string + '"');
   
