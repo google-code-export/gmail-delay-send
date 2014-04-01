@@ -121,6 +121,12 @@
   
   <div id="status" style='background-color:yellow'><h3>Loading..</h3></div>
  
+  <p>
+   Learn how to use me before installing please! <br/>
+   
+   Please watch the video, and follow the tutorial <a href="https://gmail-delay-send.googlecode.com">here<a/>.
+  </p> 
+  
   <form id="prefs_form" style="display:none">
     <table>
       <tr>
